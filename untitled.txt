@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PromptForge AI — Powered by Claude</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Bebas+Neue&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050508;
+  --surface: #0d0d14;
+  --surface2: #13131e;
+  --border: #1c1c2e;
+  --border2: #252538;
+  --violet: #7b5ea7;
+  --violet-bright: #a78bfa;
+  --cyan: #22d3ee;
+  --amber: #f59e0b;
+  --green: #10b981;
+  --red: #f43f5e;
+  --text: #e8e8f0;
+  --text2: #9090b0;
+  --text3: #555570;
+  --glow-v: rgba(123,94,167,0.35);
+  --glow-c: rgba(34,211,238,0.2);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Grotesk', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Grid background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(123,94,167,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(123,94,167,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Glow orbs */
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+.orb-1 { width: 500px; height: 500px; background: rgba(123,94,167,0.12); top: -100px; left: -100px; animation: drift1 12s ease-in-out infinite alternate; }
+.orb-2 { width: 400px; height: 400px; background: rgba(34,211,238,0.08); bottom: -50px; right: -50px; animation: drift2 15s ease-in-out infinite alternate; }
+@keyframes drift1 { to { transform: translate(60px, 80px); } }
+@keyframes drift2 { to { transform: translate(-60px, -40px); } }
+
+.wrap { max-width: 900px; margin: 0 auto; padding: 48px 20px 80px; position: relative; z-index: 1; }
+
+/* HEADER */
+header {
+  margin-bottom: 48px;
+  animation: fadeSlide 0.8s ease both;
+}
+@keyframes fadeSlide { from { opacity:0; transform:translateY(-24px); } to { opacity:1; transform:translateY(0); } }
+
+.header-top {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 20px;
+}
+.logo-mark {
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, var(--violet), var(--cyan));
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 0 24px var(--glow-v);
+}
+.brand { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 2px; color: var(--text); }
+.brand span { color: var(--violet-bright); }
+.version-tag {
+  margin-left: auto;
+  background: rgba(34,211,238,0.1); border: 1px solid rgba(34,211,238,0.25);
+  color: var(--cyan); font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+  padding: 4px 10px; border-radius: 6px; letter-spacing: 1px;
+}
+
+h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(42px, 8vw, 80px);
+  line-height: 0.95;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+}
+h1 .line1 { display: block; color: var(--text); }
+h1 .line2 { display: block; color: transparent; -webkit-text-stroke: 1px rgba(167,139,250,0.5); }
+h1 .line3 { display: block; background: linear-gradient(90deg, var(--violet-bright), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+.sub {
+  color: var(--text2); font-size: 15px; font-weight: 300; max-width: 560px; line-height: 1.6;
+}
+.sub strong { color: var(--cyan); font-weight: 500; }
+
+/* AI BADGE */
+.ai-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 18px;
+  background: linear-gradient(135deg, rgba(123,94,167,0.2), rgba(34,211,238,0.1));
+  border: 1px solid rgba(167,139,250,0.3);
+  border-radius: 30px; padding: 6px 16px;
+  font-size: 12px; font-family: 'IBM Plex Mono', monospace; color: var(--violet-bright);
+}
+.ai-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+
+/* TABS */
+.tabs {
+  display: flex; gap: 4px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 5px;
+  margin-bottom: 28px;
+  animation: fadeSlide 0.8s 0.1s ease both;
+}
+.tab-btn {
+  flex: 1; padding: 13px 20px; border: none; background: transparent;
+  color: var(--text3); font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px; font-weight: 600; border-radius: 12px;
+  cursor: pointer; transition: all 0.25s; letter-spacing: 0.5px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.tab-btn.active {
+  background: var(--surface2);
+  color: var(--text);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.05) inset, 0 4px 16px rgba(0,0,0,0.4);
+}
+.tab-btn.active .tab-icon { filter: none; }
+.tab-icon { font-size: 16px; }
+.tab-btn:not(.active):hover { color: var(--text2); }
+
+/* MAIN CARD */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  animation: fadeSlide 0.8s 0.2s ease both;
+}
+.card-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.015);
+  display: flex; align-items: center; gap: 10px;
+}
+.card-header-dot { width: 8px; height: 8px; border-radius: 50%; }
+.card-header h3 { font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text2); }
+.card-body { padding: 24px; }
+
+/* FIELD */
+.field { margin-bottom: 26px; }
+.field:last-child { margin-bottom: 0; }
+.field-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text3); margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+}
+.field-label::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+/* KEYWORD INPUT */
+.input-wrap { position: relative; }
+input[type="text"], textarea {
+  width: 100%; background: var(--bg);
+  border: 1px solid var(--border2); border-radius: 12px;
+  color: var(--text); font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; padding: 14px 18px; outline: none; transition: all 0.2s;
+  resize: none;
+}
+input[type="text"]:focus, textarea:focus {
+  border-color: var(--violet);
+  box-shadow: 0 0 0 3px rgba(123,94,167,0.12), 0 0 20px rgba(123,94,167,0.08);
+}
+input[type="text"]::placeholder, textarea::placeholder { color: var(--text3); }
+
+/* PILLS */
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill {
+  padding: 7px 15px; border-radius: 8px;
+  border: 1px solid var(--border2); background: var(--bg);
+  color: var(--text3); font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s; letter-spacing: 0.3px;
+}
+.pill:hover { border-color: var(--violet); color: var(--text2); }
+.pill.selected {
+  border-color: var(--violet); background: rgba(123,94,167,0.12);
+  color: var(--violet-bright); font-weight: 600;
+  box-shadow: 0 0 12px rgba(123,94,167,0.15);
+}
+
+/* DETAIL LEVEL SLIDER */
+.slider-wrap { display: flex; align-items: center; gap: 16px; }
+.detail-slider {
+  flex: 1; -webkit-appearance: none; appearance: none;
+  height: 4px; background: var(--border2); border-radius: 2px; outline: none;
+}
+.detail-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--violet), var(--cyan));
+  cursor: pointer; box-shadow: 0 0 10px var(--glow-v);
+}
+.slider-label { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--cyan); min-width: 80px; text-align: right; }
+
+/* GENERATE BTN */
+.generate-btn {
+  width: 100%; padding: 18px; border: none; border-radius: 14px;
+  background: linear-gradient(135deg, var(--violet) 0%, #9333ea 50%, #6366f1 100%);
+  background-size: 200% 100%;
+  color: white; font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px; letter-spacing: 3px;
+  cursor: pointer; transition: all 0.3s;
+  position: relative; overflow: hidden;
+  animation: gradShift 5s ease infinite;
+}
+@keyframes gradShift { 0%,100%{background-position:0% 50%;} 50%{background-position:100% 50%;} }
+.generate-btn::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+  transform: translateX(-100%); transition: transform 0.6s;
+}
+.generate-btn:hover::before { transform: translateX(100%); }
+.generate-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px var(--glow-v); }
+.generate-btn:active { transform: translateY(0); }
+.generate-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+/* LOADING */
+.loading-state {
+  display: none; text-align: center; padding: 48px 24px;
+}
+.loading-state.visible { display: block; }
+.spinner {
+  width: 48px; height: 48px; margin: 0 auto 20px;
+  border: 2px solid var(--border2);
+  border-top-color: var(--violet-bright);
+  border-right-color: var(--cyan);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { color: var(--text2); font-size: 14px; }
+.loading-subtext { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text3); margin-top: 6px; }
+
+/* RESULTS */
+.result-section { display: none; animation: fadeSlide 0.5s ease both; }
+.result-section.visible { display: block; }
+
+.result-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; overflow: hidden; margin-bottom: 16px;
+}
+.result-header {
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(123,94,167,0.05);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  flex-wrap: wrap;
+}
+.result-title {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--violet-bright);
+  display: flex; align-items: center; gap: 8px;
+}
+.result-meta { color: var(--text3); font-size: 10px; font-family: 'IBM Plex Mono', monospace; }
+.copy-all-btn {
+  padding: 7px 16px; border-radius: 8px;
+  border: 1px solid var(--border2); background: var(--bg);
+  color: var(--text2); font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px; cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px;
+}
+.copy-all-btn:hover { border-color: var(--violet); color: var(--violet-bright); }
+.copy-all-btn.copied { border-color: var(--green); color: var(--green); background: rgba(16,185,129,0.08); }
+
+.result-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+
+.prompt-item {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 12px; padding: 18px;
+  transition: border-color 0.2s;
+}
+.prompt-item:hover { border-color: var(--border2); }
+.prompt-item-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.prompt-num {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+  color: var(--cyan); letter-spacing: 2px; text-transform: uppercase;
+}
+.prompt-actions { display: flex; gap: 8px; }
+.copy-single, .expand-btn {
+  padding: 4px 12px; border-radius: 6px;
+  border: 1px solid var(--border2); background: var(--surface);
+  color: var(--text3); font-size: 11px; cursor: pointer; transition: all 0.2s;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.copy-single:hover { border-color: var(--cyan); color: var(--cyan); }
+.copy-single.copied { border-color: var(--green); color: var(--green); }
+.expand-btn:hover { border-color: var(--violet); color: var(--violet-bright); }
+
+.prompt-text {
+  color: var(--text); font-size: 14px; line-height: 1.75; font-weight: 300;
+}
+.prompt-text .highlight-kw { color: var(--cyan); font-weight: 500; }
+.prompt-text .highlight-style { color: var(--violet-bright); font-weight: 500; }
+
+/* QUALITY SCORE */
+.quality-bar-wrap {
+  margin-top: 12px; padding-top: 12px;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.quality-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text3); flex-shrink: 0; }
+.quality-bar { flex: 1; height: 3px; background: var(--border2); border-radius: 2px; overflow: hidden; }
+.quality-fill { height: 100%; border-radius: 2px; transition: width 1s ease; }
+.quality-score { font-family: 'IBM Plex Mono', monospace; font-size: 10px; flex-shrink: 0; }
+
+/* SHUFFLE / ACTIONS ROW */
+.actions-row {
+  display: flex; gap: 10px; flex-wrap: wrap;
+}
+.action-btn {
+  flex: 1; min-width: 120px;
+  padding: 12px 20px; border-radius: 10px;
+  border: 1px solid var(--border2); background: var(--surface);
+  color: var(--text2); font-size: 13px; font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: center;
+}
+.action-btn:hover { border-color: var(--violet); color: var(--violet-bright); background: rgba(123,94,167,0.08); }
+
+/* ERROR */
+.error-box {
+  display: none; background: rgba(244,63,94,0.08);
+  border: 1px solid rgba(244,63,94,0.25); border-radius: 12px;
+  padding: 16px 20px; margin-top: 16px; color: #fda4af; font-size: 14px;
+}
+.error-box.visible { display: block; }
+
+/* CHARACTER COUNT */
+.char-count { text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text3); margin-top: 6px; }
+
+/* SECTION DIVIDER */
+.section-divider {
+  display: flex; align-items: center; gap: 12px;
+  color: var(--text3); font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+  letter-spacing: 2px; text-transform: uppercase; margin: 8px 0 20px;
+}
+.section-divider::before, .section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* FOOTER */
+footer {
+  text-align: center; padding-top: 40px;
+  color: var(--text3); font-size: 12px;
+  font-family: 'IBM Plex Mono', monospace; letter-spacing: 1px;
+}
+footer span { color: var(--violet-bright); }
+
+/* TOOLTIP */
+.tooltip-wrap { position: relative; display: inline-flex; align-items: center; }
+.tooltip-icon { width: 14px; height: 14px; border-radius: 50%; background: var(--border2); color: var(--text3); font-size: 9px; display: inline-flex; align-items: center; justify-content: center; cursor: help; margin-left: 6px; }
+
+@media (max-width: 600px) {
+  .card-body { padding: 16px; }
+  h1 { font-size: 40px; }
+  .tabs { flex-direction: column; }
+  .actions-row { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<div class="wrap">
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-top">
+      <div class="logo-mark">⚡</div>
+      <div class="brand">Prompt<span>Forge</span></div>
+      <div class="version-tag">v3.0 · AI Powered</div>
+    </div>
+    <h1>
+      <span class="line1">GENERATE</span>
+      <span class="line2">POWERFUL</span>
+      <span class="line3">AI PROMPTS</span>
+    </h1>
+    <p class="sub">
+      Real <strong>Claude AI</strong> ke saath ultra-detailed prompts banao —
+      Midjourney, DALL·E, Sora, Runway aur text AI ke liye.
+    </p>
+    <div class="ai-badge">
+      <span class="ai-dot"></span>
+      Powered by Groq · Free · Live AI Generation
+    </div>
+  </header>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('image')" id="tab-image">
+      <span class="tab-icon">🖼️</span> Image Prompt
+    </button>
+    <button class="tab-btn" onclick="switchTab('video')" id="tab-video">
+      <span class="tab-icon">🎬</span> Video Prompt
+    </button>
+    <button class="tab-btn" onclick="switchTab('text')" id="tab-text">
+      <span class="tab-icon">💬</span> Text / Chat AI
+    </button>
+  </div>
+
+  <!-- MAIN CARD -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-dot" style="background:var(--violet-bright);box-shadow:0 0 8px var(--violet-bright)"></div>
+      <h3 id="card-title">Image Prompt Builder</h3>
+    </div>
+    <div class="card-body">
+
+      <!-- ── IMAGE FIELDS ── -->
+      <div id="image-fields">
+        <div class="field">
+          <label class="field-label">Subject / Topic</label>
+          <div class="input-wrap">
+            <input type="text" id="img-keyword" placeholder="e.g. warrior woman, cyberpunk city, magical forest, abstract mind..." maxlength="200" oninput="updateCharCount('img-keyword','img-char')">
+            <div class="char-count" id="img-char">0 / 200</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Style</label>
+          <div class="pills">
+            <span class="pill selected" data-group="img-style">Photorealistic</span>
+            <span class="pill" data-group="img-style">Cinematic</span>
+            <span class="pill" data-group="img-style">Anime / Manga</span>
+            <span class="pill" data-group="img-style">Oil Painting</span>
+            <span class="pill" data-group="img-style">Watercolor</span>
+            <span class="pill" data-group="img-style">3D Render</span>
+            <span class="pill" data-group="img-style">Dark Fantasy</span>
+            <span class="pill" data-group="img-style">Cyberpunk</span>
+            <span class="pill" data-group="img-style">Minimalist</span>
+            <span class="pill" data-group="img-style">Vintage / Retro</span>
+            <span class="pill" data-group="img-style">Surrealism</span>
+            <span class="pill" data-group="img-style">Comic Book</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Lighting</label>
+          <div class="pills">
+            <span class="pill selected" data-group="img-light">Golden Hour</span>
+            <span class="pill" data-group="img-light">Neon Lights</span>
+            <span class="pill" data-group="img-light">Studio Light</span>
+            <span class="pill" data-group="img-light">Moonlight</span>
+            <span class="pill" data-group="img-light">Dramatic Shadows</span>
+            <span class="pill" data-group="img-light">Bioluminescent</span>
+            <span class="pill" data-group="img-light">Overcast Moody</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Mood / Emotion</label>
+          <div class="pills">
+            <span class="pill selected" data-group="img-mood">Epic & Grand</span>
+            <span class="pill" data-group="img-mood">Mysterious</span>
+            <span class="pill" data-group="img-mood">Peaceful</span>
+            <span class="pill" data-group="img-mood">Dark & Gritty</span>
+            <span class="pill" data-group="img-mood">Whimsical</span>
+            <span class="pill" data-group="img-mood">Romantic</span>
+            <span class="pill" data-group="img-mood">Futuristic</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">AI Tool</label>
+          <div class="pills">
+            <span class="pill selected" data-group="img-tool">Midjourney</span>
+            <span class="pill" data-group="img-tool">DALL·E 3</span>
+            <span class="pill" data-group="img-tool">Stable Diffusion</span>
+            <span class="pill" data-group="img-tool">Ideogram</span>
+            <span class="pill" data-group="img-tool">Adobe Firefly</span>
+            <span class="pill" data-group="img-tool">Flux</span>
+          </div>
+        </div>
+
+        <div class="section-divider">Advanced Options</div>
+
+        <div class="field">
+          <label class="field-label">Detail Level</label>
+          <div class="slider-wrap">
+            <span style="font-size:11px;color:var(--text3);font-family:'IBM Plex Mono',monospace">Basic</span>
+            <input type="range" class="detail-slider" id="img-detail" min="1" max="3" value="2" oninput="updateDetailLabel(this,'img-detail-lbl')">
+            <span style="font-size:11px;color:var(--text3);font-family:'IBM Plex Mono',monospace">Max</span>
+            <span class="slider-label" id="img-detail-lbl">Medium Detail</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── VIDEO FIELDS ── -->
+      <div id="video-fields" style="display:none;">
+        <div class="field">
+          <label class="field-label">Scene / Subject</label>
+          <div class="input-wrap">
+            <input type="text" id="vid-keyword" placeholder="e.g. ocean waves at sunset, spaceship landing, busy Tokyo streets..." maxlength="200" oninput="updateCharCount('vid-keyword','vid-char')">
+            <div class="char-count" id="vid-char">0 / 200</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Camera Movement</label>
+          <div class="pills">
+            <span class="pill selected" data-group="vid-cam">Slow Zoom In</span>
+            <span class="pill" data-group="vid-cam">Drone Aerial</span>
+            <span class="pill" data-group="vid-cam">Tracking Shot</span>
+            <span class="pill" data-group="vid-cam">Slow Motion</span>
+            <span class="pill" data-group="vid-cam">Timelapse</span>
+            <span class="pill" data-group="vid-cam">POV Immersive</span>
+            <span class="pill" data-group="vid-cam">360° Pan</span>
+            <span class="pill" data-group="vid-cam">Handheld Raw</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Mood / Atmosphere</label>
+          <div class="pills">
+            <span class="pill selected" data-group="vid-mood">Cinematic Epic</span>
+            <span class="pill" data-group="vid-mood">Peaceful Calm</span>
+            <span class="pill" data-group="vid-mood">Dark Mysterious</span>
+            <span class="pill" data-group="vid-mood">Futuristic</span>
+            <span class="pill" data-group="vid-mood">Romantic</span>
+            <span class="pill" data-group="vid-mood">Action Intense</span>
+            <span class="pill" data-group="vid-mood">Horror Tense</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Video Duration</label>
+          <div class="pills">
+            <span class="pill selected" data-group="vid-dur">5 seconds</span>
+            <span class="pill" data-group="vid-dur">10 seconds</span>
+            <span class="pill" data-group="vid-dur">15 seconds</span>
+            <span class="pill" data-group="vid-dur">30 seconds</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">AI Video Tool</label>
+          <div class="pills">
+            <span class="pill selected" data-group="vid-tool">Sora</span>
+            <span class="pill" data-group="vid-tool">Runway Gen-3</span>
+            <span class="pill" data-group="vid-tool">Kling AI</span>
+            <span class="pill" data-group="vid-tool">Pika Labs</span>
+            <span class="pill" data-group="vid-tool">Luma Dream</span>
+            <span class="pill" data-group="vid-tool">Hailuo AI</span>
+          </div>
+        </div>
+
+        <div class="section-divider">Advanced Options</div>
+
+        <div class="field">
+          <label class="field-label">Detail Level</label>
+          <div class="slider-wrap">
+            <span style="font-size:11px;color:var(--text3);font-family:'IBM Plex Mono',monospace">Basic</span>
+            <input type="range" class="detail-slider" id="vid-detail" min="1" max="3" value="2" oninput="updateDetailLabel(this,'vid-detail-lbl')">
+            <span style="font-size:11px;color:var(--text3);font-family:'IBM Plex Mono',monospace">Max</span>
+            <span class="slider-label" id="vid-detail-lbl">Medium Detail</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TEXT / CHAT AI FIELDS ── -->
+      <div id="text-fields" style="display:none;">
+        <div class="field">
+          <label class="field-label">Task / Goal</label>
+          <div class="input-wrap">
+            <textarea id="txt-keyword" rows="3" placeholder="e.g. write a product description for a shoe brand, help me debug Python code, explain quantum computing simply..." maxlength="400" oninput="updateCharCount('txt-keyword','txt-char')"></textarea>
+            <div class="char-count" id="txt-char">0 / 400</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Prompt Type</label>
+          <div class="pills">
+            <span class="pill selected" data-group="txt-type">Detailed Instruction</span>
+            <span class="pill" data-group="txt-type">Role-Play / Persona</span>
+            <span class="pill" data-group="txt-type">Chain of Thought</span>
+            <span class="pill" data-group="txt-type">Creative Writing</span>
+            <span class="pill" data-group="txt-type">Code / Technical</span>
+            <span class="pill" data-group="txt-type">Research / Analysis</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Tone</label>
+          <div class="pills">
+            <span class="pill selected" data-group="txt-tone">Professional</span>
+            <span class="pill" data-group="txt-tone">Casual & Friendly</span>
+            <span class="pill" data-group="txt-tone">Academic / Formal</span>
+            <span class="pill" data-group="txt-tone">Humorous</span>
+            <span class="pill" data-group="txt-tone">Empathetic</span>
+            <span class="pill" data-group="txt-tone">Persuasive</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Target AI</label>
+          <div class="pills">
+            <span class="pill selected" data-group="txt-tool">ChatGPT / GPT-4</span>
+            <span class="pill" data-group="txt-tool">Claude</span>
+            <span class="pill" data-group="txt-tool">Gemini</span>
+            <span class="pill" data-group="txt-tool">Universal</span>
+          </div>
+        </div>
+
+        <div class="section-divider">Advanced Options</div>
+
+        <div class="field">
+          <label class="field-label">Output Length</label>
+          <div class="pills">
+            <span class="pill selected" data-group="txt-len">Concise</span>
+            <span class="pill" data-group="txt-len">Medium</span>
+            <span class="pill" data-group="txt-len">Detailed</span>
+            <span class="pill" data-group="txt-len">Exhaustive</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- GENERATE BUTTON -->
+      <div style="margin-top:28px;">
+        <button class="generate-btn" onclick="generatePrompt()" id="gen-btn">
+          ⚡ GENERATE WITH AI
+        </button>
+      </div>
+
+      <!-- LOADING -->
+      <div class="loading-state" id="loading">
+        <div class="spinner"></div>
+        <div class="loading-text">Groq AI prompt bana raha hai...</div>
+        <div class="loading-subtext" id="loading-sub">Analyzing your inputs · Building context · Optimizing details</div>
+      </div>
+
+      <!-- ERROR -->
+      <div class="error-box" id="error-box">
+        ⚠️ <span id="error-msg">Kuch error aaya. Dobara try karein.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="result-section" id="result-section">
+    <div class="result-card">
+      <div class="result-header">
+        <div>
+          <div class="result-title">
+            ⚡ <span id="result-label">Generated Prompts</span>
+          </div>
+          <div class="result-meta" id="result-meta"></div>
+        </div>
+        <button class="copy-all-btn" id="copy-all-btn" onclick="copyAll()">Copy All</button>
+      </div>
+      <div class="result-body" id="result-body"></div>
+    </div>
+    <div class="actions-row">
+      <button class="action-btn" onclick="generatePrompt()">🔀 New Variations</button>
+      <button class="action-btn" onclick="clearResults()">✕ Clear</button>
+    </div>
+  </div>
+
+  <footer>
+    Made with ❤️ · Powered by <span>Groq AI</span> · PromptForge v3
+  </footer>
+</div>
+
+<script>
+// ── STATE ────────────────────────────────────────────────
+let currentTab = 'image';
+let selected = {};
+let lastPrompts = [];
+
+// ── INIT PILLS ───────────────────────────────────────────
+document.querySelectorAll('.pill').forEach(pill => {
+  const group = pill.dataset.group;
+  pill.addEventListener('click', () => {
+    document.querySelectorAll(`[data-group="${group}"]`).forEach(p => p.classList.remove('selected'));
+    pill.classList.add('selected');
+    selected[group] = pill.textContent.trim();
+  });
+  if (pill.classList.contains('selected')) {
+    selected[group] = pill.textContent.trim();
+  }
+});
+
+// ── TAB SWITCH ───────────────────────────────────────────
+function switchTab(tab) {
+  currentTab = tab;
+  ['image','video','text'].forEach(t => {
+    document.getElementById(t+'-fields').style.display = tab === t ? 'block' : 'none';
+    document.getElementById('tab-'+t).classList.toggle('active', tab === t);
+  });
+  const titles = { image: 'Image Prompt Builder', video: 'Video Prompt Builder', text: 'Text / Chat AI Prompt Builder' };
+  document.getElementById('card-title').textContent = titles[tab];
+  document.getElementById('result-section').classList.remove('visible');
+  hideError();
+}
+
+// ── HELPERS ──────────────────────────────────────────────
+function updateCharCount(inputId, countId) {
+  const el = document.getElementById(inputId);
+  const count = document.getElementById(countId);
+  count.textContent = `${el.value.length} / ${el.maxLength}`;
+}
+
+function updateDetailLabel(slider, labelId) {
+  const labels = { '1': 'Basic Detail', '2': 'Medium Detail', '3': 'Max Detail' };
+  document.getElementById(labelId).textContent = labels[slider.value];
+}
+
+function showError(msg) {
+  const box = document.getElementById('error-box');
+  document.getElementById('error-msg').textContent = msg;
+  box.classList.add('visible');
+}
+function hideError() { document.getElementById('error-box').classList.remove('visible'); }
+
+function setLoading(on) {
+  document.getElementById('loading').classList.toggle('visible', on);
+  document.getElementById('gen-btn').disabled = on;
+  document.getElementById('gen-btn').textContent = on ? '⏳ Generating...' : '⚡ GENERATE WITH AI';
+}
+
+function clearResults() {
+  document.getElementById('result-section').classList.remove('visible');
+  lastPrompts = [];
+}
+
+// ── BUILD SYSTEM PROMPT ──────────────────────────────────
+function buildSystemPrompt() {
+  if (currentTab === 'image') {
+    const detail = document.getElementById('img-detail').value;
+    const detailInstr = detail === '1'
+      ? 'Keep prompts concise, around 30-50 words each.'
+      : detail === '2'
+      ? 'Make prompts moderately detailed, around 60-90 words each.'
+      : 'Make prompts extremely detailed and rich, around 100-150 words each. Include color palette, texture details, composition notes, and technical camera/rendering parameters.';
+
+    return `You are an expert AI image prompt engineer. Generate exactly 3 highly effective, unique image prompts for AI image generation tools.
+
+Rules:
+- Each prompt must be distinct and creative — no repetition
+- ${detailInstr}
+- Include specific artistic details: composition, color palette, lighting nuances, texture, depth
+- Naturally incorporate the style, lighting, and mood into each prompt
+- End each prompt with the appropriate tool-specific parameters
+- Do NOT use generic filler words
+- Return ONLY a JSON array with exactly 3 strings, nothing else
+- Format: ["prompt1", "prompt2", "prompt3"]`;
+
+  } else if (currentTab === 'video') {
+    const detail = document.getElementById('vid-detail').value;
+    const detailInstr = detail === '1'
+      ? 'Keep prompts concise, around 30-50 words each.'
+      : detail === '2'
+      ? 'Make prompts moderately detailed, around 60-90 words each.'
+      : 'Make prompts extremely detailed, around 100-140 words each. Include precise camera movement description, color grading, sound direction hints, and transition details.';
+
+    return `You are an expert AI video prompt engineer. Generate exactly 3 highly effective, unique video prompts for AI video generation tools.
+
+Rules:
+- Each prompt must be distinct with different creative approaches
+- ${detailInstr}
+- Include camera movement, lighting transitions, color grade, and timing
+- Describe the emotional arc and visual flow of the video
+- Include tool-specific parameters at the end
+- Return ONLY a JSON array with exactly 3 strings, nothing else
+- Format: ["prompt1", "prompt2", "prompt3"]`;
+
+  } else {
+    return `You are an expert prompt engineer for text AI models. Generate exactly 3 highly effective, unique prompts optimized for text AI assistants.
+
+Rules:
+- Each prompt must be a complete, ready-to-use prompt (not a description of a prompt)
+- Include clear context, role assignment if needed, specific instructions, and output format guidance
+- Make prompts specific and actionable — avoid vague instructions
+- Tailor to the specified prompt type, tone, and output length
+- Return ONLY a JSON array with exactly 3 strings, nothing else
+- Format: ["prompt1", "prompt2", "prompt3"]`;
+  }
+}
+
+// ── BUILD USER MESSAGE ───────────────────────────────────
+function buildUserMessage() {
+  if (currentTab === 'image') {
+    const kw = document.getElementById('img-keyword').value.trim() || 'a beautiful mysterious scene';
+    const style = selected['img-style'] || 'Photorealistic';
+    const light = selected['img-light'] || 'Golden Hour';
+    const mood = selected['img-mood'] || 'Epic & Grand';
+    const tool = selected['img-tool'] || 'Midjourney';
+
+    const toolParams = {
+      'Midjourney': ' --ar 16:9 --v 6.1 --stylize 750 --quality 2',
+      'DALL·E 3': ' | high quality, detailed, 4K',
+      'Stable Diffusion': ', masterpiece, best quality, highly detailed, 4k, (perfect composition:1.3)',
+      'Ideogram': ' | high quality illustration, typography-friendly',
+      'Adobe Firefly': ' | professional quality, commercial use, detailed',
+      'Flux': ', ultra detailed, photorealistic, 8K resolution'
+    };
+
+    return `Subject: "${kw}"
+Style: ${style}
+Lighting: ${light}
+Mood: ${mood}
+Target Tool: ${tool}
+Tool Parameters to append: ${toolParams[tool] || ''}
+
+Generate 3 unique, powerful image prompts for this subject.`;
+
+  } else if (currentTab === 'video') {
+    const kw = document.getElementById('vid-keyword').value.trim() || 'a dramatic cinematic landscape';
+    const cam = selected['vid-cam'] || 'Slow Zoom In';
+    const mood = selected['vid-mood'] || 'Cinematic Epic';
+    const dur = selected['vid-dur'] || '10 seconds';
+    const tool = selected['vid-tool'] || 'Sora';
+
+    const toolParams = {
+      'Sora': `duration: ${dur}, aspect_ratio: 16:9, quality: high`,
+      'Runway Gen-3': `duration: ${dur}, cinematic quality, 4K`,
+      'Kling AI': `duration: ${dur}, smooth motion, high quality`,
+      'Pika Labs': `duration: ${dur}, HD, smooth`,
+      'Luma Dream': `duration: ${dur}, dream motion, cinematic`,
+      'Hailuo AI': `duration: ${dur}, high quality, smooth`
+    };
+
+    return `Scene/Subject: "${kw}"
+Camera Movement: ${cam}
+Mood/Atmosphere: ${mood}
+Duration: ${dur}
+Target Tool: ${tool}
+Tool Parameters: ${toolParams[tool] || dur}
+
+Generate 3 unique, powerful video prompts for this scene.`;
+
+  } else {
+    const kw = document.getElementById('txt-keyword').value.trim() || 'help me with a task';
+    const type = selected['txt-type'] || 'Detailed Instruction';
+    const tone = selected['txt-tone'] || 'Professional';
+    const tool = selected['txt-tool'] || 'ChatGPT / GPT-4';
+    const len = selected['txt-len'] || 'Medium';
+
+    return `Task/Goal: "${kw}"
+Prompt Type: ${type}
+Tone: ${tone}
+Target AI: ${tool}
+Output Length Required: ${len}
+
+Generate 3 unique, highly effective text prompts for this goal.`;
+  }
+}
+
+// ── GENERATE ─────────────────────────────────────────────
+async function generatePrompt() {
+  hideError();
+  setLoading(true);
+  document.getElementById('result-section').classList.remove('visible');
+
+  const loadingMsgs = [
+    'Claude AI analyzing your inputs...',
+    'Crafting unique prompt variations...',
+    'Adding rich details and parameters...',
+    'Optimizing for your selected tool...'
+  ];
+  let msgIdx = 0;
+  const loadingInterval = setInterval(() => {
+    msgIdx = (msgIdx + 1) % loadingMsgs.length;
+    document.getElementById('loading-sub').textContent = loadingMsgs[msgIdx];
+  }, 1200);
+
+  const GROQ_API_KEY = 'APNI_GROQ_KEY_YAHAN'; // gsk_... key yahan paste karo
+
+  try {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${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}`
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        max_tokens: 1000,
+        temperature: 0.85,
+        messages: [
+          { role: 'system', content: buildSystemPrompt() },
+          { role: 'user', content: buildUserMessage() }
+        ]
+      })
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error?.message || `API Error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const raw = data.choices?.[0]?.message?.content || '';
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const prompts = JSON.parse(clean);
+
+    if (!Array.isArray(prompts) || prompts.length === 0) throw new Error('Invalid response format');
+
+    lastPrompts = prompts;
+    renderResults(prompts);
+
+  } catch (err) {
+    console.error(err);
+    showError('AI generation failed. Please try again. Error: ' + err.message);
+  } finally {
+    clearInterval(loadingInterval);
+    setLoading(false);
+  }
+}
+
+// ── RENDER RESULTS ───────────────────────────────────────
+function renderResults(prompts) {
+  const tool = selected['img-tool'] || selected['vid-tool'] || selected['txt-tool'] || '';
+  const tabLabel = { image: 'Image', video: 'Video', text: 'Text AI' }[currentTab];
+  document.getElementById('result-label').textContent = `${tool} ${tabLabel} Prompts`;
+  document.getElementById('result-meta').textContent = `${prompts.length} prompts · AI generated · ${new Date().toLocaleTimeString()}`;
+
+  const body = document.getElementById('result-body');
+  body.innerHTML = prompts.map((p, i) => {
+    const wordCount = p.split(' ').length;
+    const quality = Math.min(95, 60 + wordCount * 0.5 + (p.includes(',') ? 10 : 0));
+    const qColor = quality > 80 ? 'var(--green)' : quality > 60 ? 'var(--cyan)' : 'var(--amber)';
+    const qLabel = quality > 80 ? 'High Quality' : quality > 60 ? 'Good' : 'Basic';
+
+    return `
+    <div class="prompt-item" id="prompt-${i}">
+      <div class="prompt-item-header">
+        <div class="prompt-num">Prompt ${i + 1} of ${prompts.length}</div>
+        <div class="prompt-actions">
+          <button class="copy-single" onclick="copySingle(this, ${i})">Copy</button>
+        </div>
+      </div>
+      <div class="prompt-text">${escapeHtml(p)}</div>
+      <div class="quality-bar-wrap">
+        <span class="quality-label">Prompt Quality</span>
+        <div class="quality-bar">
+          <div class="quality-fill" id="qfill-${i}" style="width:0%;background:${qColor}" data-q="${quality}"></div>
+        </div>
+        <span class="quality-score" style="color:${qColor}">${qLabel} · ${Math.round(quality)}%</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('result-section').classList.add('visible');
+  document.getElementById('result-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // Animate quality bars
+  setTimeout(() => {
+    prompts.forEach((_, i) => {
+      const fill = document.getElementById(`qfill-${i}`);
+      if (fill) fill.style.width = fill.dataset.q + '%';
+    });
+  }, 200);
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── COPY ─────────────────────────────────────────────────
+function copySingle(btn, idx) {
+  navigator.clipboard.writeText(lastPrompts[idx]).then(() => {
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+  });
+}
+
+function copyAll() {
+  const btn = document.getElementById('copy-all-btn');
+  navigator.clipboard.writeText(lastPrompts.join('\n\n---\n\n')).then(() => {
+    btn.textContent = '✓ All Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy All'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>
