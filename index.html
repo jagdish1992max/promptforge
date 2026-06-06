@@ -407,23 +407,111 @@ function clearRes(){document.getElementById('rs').classList.remove('vis');prompt
 function togPanel(t){const b=document.getElementById(t==='fav'?'fb':'hb'),g=document.getElementById(t==='fav'?'ftog':'htog');b.classList.toggle('op');g.classList.toggle('op');}
 
 function sysPrompt(){
-  const d=document.getElementById(tab==='video'?'vid-det':'img-det')?.value||'2';
-  const di=d==='1'?'30-50 words each':d==='2'?'60-90 words each':'100-150 words each with color palette, texture, composition, technical parameters';
-  if(tab==='image')return`You are an expert AI image prompt engineer. Generate exactly 3 unique image prompts.\nRules:\n- Each prompt must be distinct\n- Length: ${di}\n- Include artistic details: composition, color palette, lighting, texture\n- Return ONLY a JSON array: ["p1","p2","p3"]`;
-  if(tab==='video')return`You are an expert AI video prompt engineer. Generate exactly 3 unique video prompts.\nRules:\n- Each prompt must be distinct\n- Length: ${di}\n- Include camera movement, color grade, timing\n- Return ONLY a JSON array: ["p1","p2","p3"]`;
-  return`You are an expert prompt engineer. Generate exactly 3 ready-to-use prompts for text AI.\nRules:\n- Each must be complete and actionable\n- Include context, role, instructions, output format\n- Return ONLY a JSON array: ["p1","p2","p3"]`;
+  if(tab==='image') return `You are the world's greatest AI image prompt architect. You think like a master cinematographer, concept artist, and storyteller combined. Your prompts produce jaw-dropping, award-winning AI images.
+
+Generate exactly 3 ULTRA-DETAILED cinematic image prompts. Each must read like a movie scene description by a master director.
+
+Each prompt MUST include ALL of these layers woven naturally into flowing prose:
+- SUBJECT: exact pose, micro-expression, emotional state, physical details (scars, sweat, breath)
+- ENVIRONMENT: foreground, midground, background with world-building depth
+- LIGHTING: key light source, fill/rim lights, color temperature, god rays, shadow direction
+- COLOR PALETTE: specific dominant + accent colors (e.g. "prussian blue shadows, molten amber highlights")
+- CAMERA: focal length (e.g. 85mm), aperture (f/1.4), shot type, depth of field, film grain
+- TEXTURE: fabric weave, metal oxidation, skin pores, surface wetness, reflectivity
+- ATMOSPHERE: particles (ash/snow/petals), fog, weather, season, air quality
+- ARTISTIC REFERENCE: art movement, specific artist influence
+- TOOL PARAMS: appended at end
+
+STRICT RULES:
+- Each prompt = 150-220 words minimum
+- 3 completely different creative interpretations
+- NEVER use vague words like "beautiful", "stunning" — use SPECIFIC visual descriptors
+- Return ONLY valid JSON array: ["prompt1","prompt2","prompt3"] — nothing else`;
+
+  if(tab==='video') return `You are the world's greatest AI video prompt director — you think like Christopher Nolan, Denis Villeneuve, and Roger Deakins combined.
+
+Generate exactly 3 ULTRA-DETAILED cinematic video prompts. Each must feel like a professional film treatment.
+
+Each prompt MUST include ALL layers:
+- OPENING FRAME: exact starting composition, subject, environment
+- CAMERA MOVEMENT: precise technical movement (e.g. "slow 8-second dolly push at 24fps, racking focus from foreground bokeh to subject")
+- ACTION ARC: beat-by-beat progression, emotional climax moment
+- LIGHTING TRANSITIONS: how light evolves, color temperature shifts, practical lights
+- COLOR GRADE: specific LUT style, shadow/highlight treatment
+- ATMOSPHERE: particles, wind, weather changes during shot
+- VISUAL FX: lens flares, motion blur, speed ramps, anamorphic distortion
+- CLOSING FRAME: final composition, emotional payoff
+- TECHNICAL: duration, aspect ratio, tool params
+
+STRICT RULES:
+- Each prompt = 150-220 words
+- 3 completely different cinematic approaches
+- Return ONLY JSON array: ["p1","p2","p3"]`;
+
+  return `You are the world's greatest AI prompt engineer. Your prompts extract extraordinary results from GPT-4, Claude, and Gemini.
+
+Generate exactly 3 ULTRA-DETAILED, production-ready text prompts.
+
+Each prompt MUST include:
+- ROLE: specific expert identity with credentials and context
+- CONTEXT: rich background, constraints, stakes
+- TASK: step-by-step with sub-tasks and priorities
+- OUTPUT FORMAT: exact structure, length, tone, formatting
+- QUALITY BAR: what great looks like, what to avoid
+- EXAMPLE: one concrete example of desired output style
+- REASONING: ask AI to think step-by-step before answering
+- EDGE CASES: handle ambiguity and exceptions
+
+STRICT RULES:
+- Each prompt = 150-200 words
+- 3 different approaches (direct instruction / roleplay / chain-of-thought)
+- Return ONLY JSON array: ["p1","p2","p3"]`;
 }
 
 function userMsg(){
-  const tp={'Midjourney':' --ar 16:9 --v 6.1 --stylize 750 --quality 2','DALL·E 3':' | high quality, 4K','Stable Diffusion':', masterpiece, best quality, 4k','Ideogram':' | high quality','Adobe Firefly':' | professional quality','Flux':', ultra detailed, 8K'};
-  if(tab==='image'){const kw=document.getElementById('img-kw').value.trim()||'mysterious scene';return`Subject: "${kw}"\nStyle: ${sel['img-style']||'Photorealistic'}\nLighting: ${sel['img-light']||'Golden Hour'}\nMood: ${sel['img-mood']||'Epic & Grand'}\nTool: ${sel['img-tool']||'Midjourney'}\nAppend params: ${tp[sel['img-tool']]||''}\nGenerate 3 unique image prompts.`;}
-  if(tab==='video'){const kw=document.getElementById('vid-kw').value.trim()||'cinematic landscape';return`Scene: "${kw}"\nCamera: ${sel['vid-cam']||'Slow Zoom In'}\nMood: ${sel['vid-mood']||'Cinematic Epic'}\nDuration: ${sel['vid-dur']||'10 seconds'}\nTool: ${sel['vid-tool']||'Sora'}\nGenerate 3 unique video prompts.`;}
+  const tp={'Midjourney':'--ar 16:9 --v 6.1 --stylize 900 --quality 2 --chaos 10','DALL·E 3':'| ultra high quality, 4K, highly detailed','Stable Diffusion':', masterpiece, best quality, ultra detailed, 8k uhd, (perfect composition:1.4), hyper realistic','Ideogram':'| premium quality, detailed illustration','Adobe Firefly':'| professional commercial quality, ultra detailed','Flux':', ultra photorealistic, 8K resolution, hyperdetailed'};
+  if(tab==='image'){
+    const kw=document.getElementById('img-kw').value.trim()||'a mysterious ancient scene';
+    const tool=sel['img-tool']||'Midjourney';
+    return`Create 3 ultra-detailed image prompts for this:
+
+SUBJECT: "${kw}"
+STYLE: ${sel['img-style']||'Photorealistic'}
+LIGHTING: ${sel['img-light']||'Golden Hour'}
+MOOD: ${sel['img-mood']||'Epic & Grand'}
+TARGET TOOL: ${tool}
+END EACH PROMPT WITH: ${tp[tool]||''}
+
+Make each prompt a completely different creative interpretation. Be extremely specific — describe exact colors, textures, camera settings, lighting angles. Minimum 150 words each.`;
+  }
+  if(tab==='video'){
+    const kw=document.getElementById('vid-kw').value.trim()||'a cinematic landscape';
+    const tool=sel['vid-tool']||'Sora';
+    const dur=sel['vid-dur']||'10 seconds';
+    return`Create 3 ultra-detailed video prompts for this:
+
+SCENE: "${kw}"
+CAMERA: ${sel['vid-cam']||'Slow Zoom In'}
+MOOD: ${sel['vid-mood']||'Cinematic Epic'}
+DURATION: ${dur}
+TARGET TOOL: ${tool}
+
+Describe exact camera movements, lighting transitions, color grade, atmospheric effects. Each prompt = different cinematic style. Minimum 150 words each.`;
+  }
   const kw=document.getElementById('txt-kw').value.trim()||'help me with a task';
-  return`Task: "${kw}"\nType: ${sel['txt-type']||'Detailed Instruction'}\nTone: ${sel['txt-tone']||'Professional'}\nTarget AI: ${sel['txt-tool']||'ChatGPT / GPT-4'}\nLength: ${sel['txt-len']||'Medium'}\nGenerate 3 unique text prompts.`;
+  return`Create 3 ultra-detailed, ready-to-use AI prompts for this goal:
+
+TASK: "${kw}"
+PROMPT TYPE: ${sel['txt-type']||'Detailed Instruction'}
+TONE: ${sel['txt-tone']||'Professional'}
+TARGET AI: ${sel['txt-tool']||'ChatGPT / GPT-4'}
+OUTPUT LENGTH: ${sel['txt-len']||'Medium'}
+
+Each prompt should be complete, specific, and immediately usable. Include role assignment, context, exact instructions, output format. Minimum 150 words each.`;
 }
 
 async function callGroq(sys,usr){
-  const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${KEY}`},body:JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:1000,temperature:0.85,messages:[{role:'system',content:sys},{role:'user',content:usr}]})});
+  const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${KEY}`},body:JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:2000,temperature:0.9,messages:[{role:'system',content:sys},{role:'user',content:usr}]})});
   if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||`API Error: ${r.status}`);}
   const d=await r.json();return d.choices?.[0]?.message?.content||'';
 }
@@ -436,9 +524,15 @@ async function generate(){
   let mi=0;const iv=setInterval(()=>{document.getElementById('lst').textContent=msgs[++mi%msgs.length];},1200);
   try{
     const raw=await callGroq(sysPrompt(),userMsg());
-    const clean=raw.replace(/```json|```/g,'').trim();
-    const ps=JSON.parse(clean);
-    if(!Array.isArray(ps)||!ps.length)throw new Error('Invalid response from AI');
+    // Try to extract JSON array from response
+    let ps=null;
+    // Method 1: direct parse
+    try{const clean=raw.replace(/```json|```/g,'').trim();ps=JSON.parse(clean);}catch(e){}
+    // Method 2: extract array with regex
+    if(!ps){try{const m=raw.match(/\[[\s\S]*\]/);if(m)ps=JSON.parse(m[0]);}catch(e){}}
+    // Method 3: extract quoted strings
+    if(!ps){try{const m=raw.match(/"([\s\S]*?)"/g);if(m&&m.length>=3)ps=m.slice(0,3).map(s=>s.replace(/^"|"$/g,''));}catch(e){}}
+    if(!ps||!Array.isArray(ps)||ps.length===0)throw new Error('AI se response nahi mila. Dobara try karo.');
     prompts=ps;
     addHist(ps);
     renderRes(ps);
@@ -465,22 +559,12 @@ function renderRes(ps){
           <button class="as fav ${isFav?'sv':''}" onclick="togFav(this,${i})">${isFav?'⭐ Saved':'♡ Save'}</button>
           <button class="as ref" onclick="refine(this,${i})">✨ Refine</button>
           <button class="as shr" onclick="sharePr(${i})">🔗 Share</button>
-          <button class="as img-btn" id="imgbtn-${i}" onclick="genImg(this,${i})">🎨 Image</button>
+
         </div>
       </div>
       <div class="ptxt" id="pt-${i}">${esc(p)}</div>
       <div class="rl" id="rl-${i}">✨ AI refine kar raha hai...</div>
-      <div class="imgw" id="imgw-${i}" style="display:none;margin-top:14px;">
-        <div class="imgl" id="imgl-${i}" style="display:none;text-align:center;padding:20px;color:var(--text2);font-size:13px;">
-          <div class="spin" style="width:32px;height:32px;margin:0 auto 10px;"></div>
-          Image generate ho rahi hai... (10-20 sec)
-        </div>
-        <img id="imgi-${i}" style="display:none;width:100%;border-radius:12px;border:1px solid var(--border2);margin-top:8px;" alt="Generated Image">
-        <div id="imgact-${i}" style="display:none;margin-top:10px;display:none;gap:8px;">
-          <a id="imdl-${i}" class="as" style="text-decoration:none;display:inline-block;" download="promptforge-image.jpg">⬇️ Download</a>
-          <button class="as" onclick="genImg(document.getElementById('imgbtn-${i}'),${i})">🔄 Regenerate</button>
-        </div>
-      </div>
+
       <div class="qw">
         <span class="ql">Quality</span>
         <div class="qb"><div class="qf" id="qf-${i}" style="width:0%;background:${qc}" data-q="${q}"></div></div>
@@ -505,39 +589,6 @@ async function refine(btn,idx){
     setTimeout(()=>{btn.textContent='✨ Refine';btn.disabled=false;},2000);
   }catch(e){btn.textContent='✨ Refine';btn.disabled=false;alert('Refine failed: '+e.message);}
   finally{document.getElementById(`rl-${idx}`).classList.remove('vis');}
-}
-
-async function genImg(btn,idx){
-  const prompt=prompts[idx];
-  const w=document.getElementById(`imgw-${idx}`);
-  const l=document.getElementById(`imgl-${idx}`);
-  const img=document.getElementById(`imgi-${idx}`);
-  const act=document.getElementById(`imgact-${idx}`);
-  w.style.display='block';
-  l.style.display='block';
-  img.style.display='none';
-  act.style.display='none';
-  btn.disabled=true;btn.textContent='⏳';
-  try{
-    const enc=encodeURIComponent(prompt);
-    const seed=Math.floor(Math.random()*99999);
-    const url=`https://image.pollinations.ai/prompt/${enc}?width=1024&height=768&seed=${seed}&nologo=true&enhance=true`;
-    img.onload=()=>{
-      l.style.display='none';
-      img.style.display='block';
-      act.style.display='flex';
-      document.getElementById(`imdl-${idx}`).href=url;
-      btn.textContent='🎨 Image';btn.disabled=false;
-    };
-    img.onerror=()=>{
-      l.innerHTML='❌ Image load nahi hua. Dobara try karo.';
-      btn.textContent='🎨 Image';btn.disabled=false;
-    };
-    img.src=url;
-  }catch(e){
-    l.innerHTML='❌ Error: '+e.message;
-    btn.textContent='🎨 Image';btn.disabled=false;
-  }
 }
 
 function togFav(btn,idx){
