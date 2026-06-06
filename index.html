@@ -95,6 +95,7 @@ input[type=text]::placeholder,textarea::placeholder{color:var(--text3);}
 .as:hover{border-color:var(--cyan);color:var(--cyan);}
 .as.fav:hover{border-color:var(--amber);color:var(--amber);}
 .as.fav.sv{border-color:var(--amber);color:var(--amber);background:rgba(245,158,11,.1);}
+.as.img-btn:hover{border-color:var(--green);color:var(--green);}
 .as.ref:hover{border-color:var(--vb);color:var(--vb);}
 .as.shr:hover{border-color:var(--green);color:var(--green);}
 .as.cop{border-color:var(--green);color:var(--green);}
@@ -464,10 +465,22 @@ function renderRes(ps){
           <button class="as fav ${isFav?'sv':''}" onclick="togFav(this,${i})">${isFav?'⭐ Saved':'♡ Save'}</button>
           <button class="as ref" onclick="refine(this,${i})">✨ Refine</button>
           <button class="as shr" onclick="sharePr(${i})">🔗 Share</button>
+          <button class="as img-btn" id="imgbtn-${i}" onclick="genImg(this,${i})">🎨 Image</button>
         </div>
       </div>
       <div class="ptxt" id="pt-${i}">${esc(p)}</div>
       <div class="rl" id="rl-${i}">✨ AI refine kar raha hai...</div>
+      <div class="imgw" id="imgw-${i}" style="display:none;margin-top:14px;">
+        <div class="imgl" id="imgl-${i}" style="display:none;text-align:center;padding:20px;color:var(--text2);font-size:13px;">
+          <div class="spin" style="width:32px;height:32px;margin:0 auto 10px;"></div>
+          Image generate ho rahi hai... (10-20 sec)
+        </div>
+        <img id="imgi-${i}" style="display:none;width:100%;border-radius:12px;border:1px solid var(--border2);margin-top:8px;" alt="Generated Image">
+        <div id="imgact-${i}" style="display:none;margin-top:10px;display:none;gap:8px;">
+          <a id="imdl-${i}" class="as" style="text-decoration:none;display:inline-block;" download="promptforge-image.jpg">⬇️ Download</a>
+          <button class="as" onclick="genImg(document.getElementById('imgbtn-${i}'),${i})">🔄 Regenerate</button>
+        </div>
+      </div>
       <div class="qw">
         <span class="ql">Quality</span>
         <div class="qb"><div class="qf" id="qf-${i}" style="width:0%;background:${qc}" data-q="${q}"></div></div>
@@ -492,6 +505,39 @@ async function refine(btn,idx){
     setTimeout(()=>{btn.textContent='✨ Refine';btn.disabled=false;},2000);
   }catch(e){btn.textContent='✨ Refine';btn.disabled=false;alert('Refine failed: '+e.message);}
   finally{document.getElementById(`rl-${idx}`).classList.remove('vis');}
+}
+
+async function genImg(btn,idx){
+  const prompt=prompts[idx];
+  const w=document.getElementById(`imgw-${idx}`);
+  const l=document.getElementById(`imgl-${idx}`);
+  const img=document.getElementById(`imgi-${idx}`);
+  const act=document.getElementById(`imgact-${idx}`);
+  w.style.display='block';
+  l.style.display='block';
+  img.style.display='none';
+  act.style.display='none';
+  btn.disabled=true;btn.textContent='⏳';
+  try{
+    const enc=encodeURIComponent(prompt);
+    const seed=Math.floor(Math.random()*99999);
+    const url=`https://image.pollinations.ai/prompt/${enc}?width=1024&height=768&seed=${seed}&nologo=true&enhance=true`;
+    img.onload=()=>{
+      l.style.display='none';
+      img.style.display='block';
+      act.style.display='flex';
+      document.getElementById(`imdl-${idx}`).href=url;
+      btn.textContent='🎨 Image';btn.disabled=false;
+    };
+    img.onerror=()=>{
+      l.innerHTML='❌ Image load nahi hua. Dobara try karo.';
+      btn.textContent='🎨 Image';btn.disabled=false;
+    };
+    img.src=url;
+  }catch(e){
+    l.innerHTML='❌ Error: '+e.message;
+    btn.textContent='🎨 Image';btn.disabled=false;
+  }
 }
 
 function togFav(btn,idx){
