@@ -1,1004 +1,561 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PromptForge AI — Powered by Claude</title>
+<title>PromptForge AI — Free AI Prompt Generator</title>
+<meta name="description" content="Free AI Prompt Generator for Midjourney, DALL-E, Sora, ChatGPT and more. Powered by Groq AI.">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Bebas+Neue&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #050508;
-  --surface: #0d0d14;
-  --surface2: #13131e;
-  --border: #1c1c2e;
-  --border2: #252538;
-  --violet: #7b5ea7;
-  --violet-bright: #a78bfa;
-  --cyan: #22d3ee;
-  --amber: #f59e0b;
-  --green: #10b981;
-  --red: #f43f5e;
-  --text: #e8e8f0;
-  --text2: #9090b0;
-  --text3: #555570;
-  --glow-v: rgba(123,94,167,0.35);
-  --glow-c: rgba(34,211,238,0.2);
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Space Grotesk', sans-serif;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* Grid background */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(123,94,167,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(123,94,167,0.04) 1px, transparent 1px);
-  background-size: 40px 40px;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* Glow orbs */
-.orb {
-  position: fixed;
-  border-radius: 50%;
-  filter: blur(80px);
-  pointer-events: none;
-  z-index: 0;
-}
-.orb-1 { width: 500px; height: 500px; background: rgba(123,94,167,0.12); top: -100px; left: -100px; animation: drift1 12s ease-in-out infinite alternate; }
-.orb-2 { width: 400px; height: 400px; background: rgba(34,211,238,0.08); bottom: -50px; right: -50px; animation: drift2 15s ease-in-out infinite alternate; }
-@keyframes drift1 { to { transform: translate(60px, 80px); } }
-@keyframes drift2 { to { transform: translate(-60px, -40px); } }
-
-.wrap { max-width: 900px; margin: 0 auto; padding: 48px 20px 80px; position: relative; z-index: 1; }
-
-/* HEADER */
-header {
-  margin-bottom: 48px;
-  animation: fadeSlide 0.8s ease both;
-}
-@keyframes fadeSlide { from { opacity:0; transform:translateY(-24px); } to { opacity:1; transform:translateY(0); } }
-
-.header-top {
-  display: flex; align-items: center; gap: 14px; margin-bottom: 20px;
-}
-.logo-mark {
-  width: 44px; height: 44px;
-  background: linear-gradient(135deg, var(--violet), var(--cyan));
-  border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px;
-  box-shadow: 0 0 24px var(--glow-v);
-}
-.brand { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 2px; color: var(--text); }
-.brand span { color: var(--violet-bright); }
-.version-tag {
-  margin-left: auto;
-  background: rgba(34,211,238,0.1); border: 1px solid rgba(34,211,238,0.25);
-  color: var(--cyan); font-family: 'IBM Plex Mono', monospace; font-size: 11px;
-  padding: 4px 10px; border-radius: 6px; letter-spacing: 1px;
-}
-
-h1 {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(42px, 8vw, 80px);
-  line-height: 0.95;
-  letter-spacing: 2px;
-  margin-bottom: 16px;
-}
-h1 .line1 { display: block; color: var(--text); }
-h1 .line2 { display: block; color: transparent; -webkit-text-stroke: 1px rgba(167,139,250,0.5); }
-h1 .line3 { display: block; background: linear-gradient(90deg, var(--violet-bright), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-
-.sub {
-  color: var(--text2); font-size: 15px; font-weight: 300; max-width: 560px; line-height: 1.6;
-}
-.sub strong { color: var(--cyan); font-weight: 500; }
-
-/* AI BADGE */
-.ai-badge {
-  display: inline-flex; align-items: center; gap: 8px;
-  margin-top: 18px;
-  background: linear-gradient(135deg, rgba(123,94,167,0.2), rgba(34,211,238,0.1));
-  border: 1px solid rgba(167,139,250,0.3);
-  border-radius: 30px; padding: 6px 16px;
-  font-size: 12px; font-family: 'IBM Plex Mono', monospace; color: var(--violet-bright);
-}
-.ai-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
-
-/* TABS */
-.tabs {
-  display: flex; gap: 4px;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 16px; padding: 5px;
-  margin-bottom: 28px;
-  animation: fadeSlide 0.8s 0.1s ease both;
-}
-.tab-btn {
-  flex: 1; padding: 13px 20px; border: none; background: transparent;
-  color: var(--text3); font-family: 'Space Grotesk', sans-serif;
-  font-size: 14px; font-weight: 600; border-radius: 12px;
-  cursor: pointer; transition: all 0.25s; letter-spacing: 0.5px;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-}
-.tab-btn.active {
-  background: var(--surface2);
-  color: var(--text);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.05) inset, 0 4px 16px rgba(0,0,0,0.4);
-}
-.tab-btn.active .tab-icon { filter: none; }
-.tab-icon { font-size: 16px; }
-.tab-btn:not(.active):hover { color: var(--text2); }
-
-/* MAIN CARD */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  overflow: hidden;
-  margin-bottom: 20px;
-  animation: fadeSlide 0.8s 0.2s ease both;
-}
-.card-header {
-  padding: 18px 24px;
-  border-bottom: 1px solid var(--border);
-  background: rgba(255,255,255,0.015);
-  display: flex; align-items: center; gap: 10px;
-}
-.card-header-dot { width: 8px; height: 8px; border-radius: 50%; }
-.card-header h3 { font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text2); }
-.card-body { padding: 24px; }
-
-/* FIELD */
-.field { margin-bottom: 26px; }
-.field:last-child { margin-bottom: 0; }
-.field-label {
-  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-  color: var(--text3); margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
-}
-.field-label::after {
-  content: ''; flex: 1; height: 1px; background: var(--border);
-}
-
-/* KEYWORD INPUT */
-.input-wrap { position: relative; }
-input[type="text"], textarea {
-  width: 100%; background: var(--bg);
-  border: 1px solid var(--border2); border-radius: 12px;
-  color: var(--text); font-family: 'Space Grotesk', sans-serif;
-  font-size: 15px; padding: 14px 18px; outline: none; transition: all 0.2s;
-  resize: none;
-}
-input[type="text"]:focus, textarea:focus {
-  border-color: var(--violet);
-  box-shadow: 0 0 0 3px rgba(123,94,167,0.12), 0 0 20px rgba(123,94,167,0.08);
-}
-input[type="text"]::placeholder, textarea::placeholder { color: var(--text3); }
-
-/* PILLS */
-.pills { display: flex; flex-wrap: wrap; gap: 8px; }
-.pill {
-  padding: 7px 15px; border-radius: 8px;
-  border: 1px solid var(--border2); background: var(--bg);
-  color: var(--text3); font-size: 13px; font-weight: 500;
-  cursor: pointer; transition: all 0.2s; letter-spacing: 0.3px;
-}
-.pill:hover { border-color: var(--violet); color: var(--text2); }
-.pill.selected {
-  border-color: var(--violet); background: rgba(123,94,167,0.12);
-  color: var(--violet-bright); font-weight: 600;
-  box-shadow: 0 0 12px rgba(123,94,167,0.15);
-}
-
-/* DETAIL LEVEL SLIDER */
-.slider-wrap { display: flex; align-items: center; gap: 16px; }
-.detail-slider {
-  flex: 1; -webkit-appearance: none; appearance: none;
-  height: 4px; background: var(--border2); border-radius: 2px; outline: none;
-}
-.detail-slider::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--violet), var(--cyan));
-  cursor: pointer; box-shadow: 0 0 10px var(--glow-v);
-}
-.slider-label { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--cyan); min-width: 80px; text-align: right; }
-
-/* GENERATE BTN */
-.generate-btn {
-  width: 100%; padding: 18px; border: none; border-radius: 14px;
-  background: linear-gradient(135deg, var(--violet) 0%, #9333ea 50%, #6366f1 100%);
-  background-size: 200% 100%;
-  color: white; font-family: 'Bebas Neue', sans-serif;
-  font-size: 20px; letter-spacing: 3px;
-  cursor: pointer; transition: all 0.3s;
-  position: relative; overflow: hidden;
-  animation: gradShift 5s ease infinite;
-}
-@keyframes gradShift { 0%,100%{background-position:0% 50%;} 50%{background-position:100% 50%;} }
-.generate-btn::before {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
-  transform: translateX(-100%); transition: transform 0.6s;
-}
-.generate-btn:hover::before { transform: translateX(100%); }
-.generate-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px var(--glow-v); }
-.generate-btn:active { transform: translateY(0); }
-.generate-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-/* LOADING */
-.loading-state {
-  display: none; text-align: center; padding: 48px 24px;
-}
-.loading-state.visible { display: block; }
-.spinner {
-  width: 48px; height: 48px; margin: 0 auto 20px;
-  border: 2px solid var(--border2);
-  border-top-color: var(--violet-bright);
-  border-right-color: var(--cyan);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-text { color: var(--text2); font-size: 14px; }
-.loading-subtext { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text3); margin-top: 6px; }
-
-/* RESULTS */
-.result-section { display: none; animation: fadeSlide 0.5s ease both; }
-.result-section.visible { display: block; }
-
-.result-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 20px; overflow: hidden; margin-bottom: 16px;
-}
-.result-header {
-  padding: 16px 22px;
-  border-bottom: 1px solid var(--border);
-  background: rgba(123,94,167,0.05);
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  flex-wrap: wrap;
-}
-.result-title {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
-  color: var(--violet-bright);
-  display: flex; align-items: center; gap: 8px;
-}
-.result-meta { color: var(--text3); font-size: 10px; font-family: 'IBM Plex Mono', monospace; }
-.copy-all-btn {
-  padding: 7px 16px; border-radius: 8px;
-  border: 1px solid var(--border2); background: var(--bg);
-  color: var(--text2); font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px; cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px;
-}
-.copy-all-btn:hover { border-color: var(--violet); color: var(--violet-bright); }
-.copy-all-btn.copied { border-color: var(--green); color: var(--green); background: rgba(16,185,129,0.08); }
-
-.result-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
-
-.prompt-item {
-  background: var(--bg); border: 1px solid var(--border);
-  border-radius: 12px; padding: 18px;
-  transition: border-color 0.2s;
-}
-.prompt-item:hover { border-color: var(--border2); }
-.prompt-item-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 12px;
-}
-.prompt-num {
-  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
-  color: var(--cyan); letter-spacing: 2px; text-transform: uppercase;
-}
-.prompt-actions { display: flex; gap: 8px; }
-.copy-single, .expand-btn {
-  padding: 4px 12px; border-radius: 6px;
-  border: 1px solid var(--border2); background: var(--surface);
-  color: var(--text3); font-size: 11px; cursor: pointer; transition: all 0.2s;
-  font-family: 'IBM Plex Mono', monospace;
-}
-.copy-single:hover { border-color: var(--cyan); color: var(--cyan); }
-.copy-single.copied { border-color: var(--green); color: var(--green); }
-.expand-btn:hover { border-color: var(--violet); color: var(--violet-bright); }
-
-.prompt-text {
-  color: var(--text); font-size: 14px; line-height: 1.75; font-weight: 300;
-}
-.prompt-text .highlight-kw { color: var(--cyan); font-weight: 500; }
-.prompt-text .highlight-style { color: var(--violet-bright); font-weight: 500; }
-
-/* QUALITY SCORE */
-.quality-bar-wrap {
-  margin-top: 12px; padding-top: 12px;
-  border-top: 1px solid var(--border);
-  display: flex; align-items: center; gap: 10px;
-}
-.quality-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text3); flex-shrink: 0; }
-.quality-bar { flex: 1; height: 3px; background: var(--border2); border-radius: 2px; overflow: hidden; }
-.quality-fill { height: 100%; border-radius: 2px; transition: width 1s ease; }
-.quality-score { font-family: 'IBM Plex Mono', monospace; font-size: 10px; flex-shrink: 0; }
-
-/* SHUFFLE / ACTIONS ROW */
-.actions-row {
-  display: flex; gap: 10px; flex-wrap: wrap;
-}
-.action-btn {
-  flex: 1; min-width: 120px;
-  padding: 12px 20px; border-radius: 10px;
-  border: 1px solid var(--border2); background: var(--surface);
-  color: var(--text2); font-size: 13px; font-family: 'Space Grotesk', sans-serif;
-  font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: center;
-}
-.action-btn:hover { border-color: var(--violet); color: var(--violet-bright); background: rgba(123,94,167,0.08); }
-
-/* ERROR */
-.error-box {
-  display: none; background: rgba(244,63,94,0.08);
-  border: 1px solid rgba(244,63,94,0.25); border-radius: 12px;
-  padding: 16px 20px; margin-top: 16px; color: #fda4af; font-size: 14px;
-}
-.error-box.visible { display: block; }
-
-/* CHARACTER COUNT */
-.char-count { text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text3); margin-top: 6px; }
-
-/* SECTION DIVIDER */
-.section-divider {
-  display: flex; align-items: center; gap: 12px;
-  color: var(--text3); font-family: 'IBM Plex Mono', monospace; font-size: 10px;
-  letter-spacing: 2px; text-transform: uppercase; margin: 8px 0 20px;
-}
-.section-divider::before, .section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-/* FOOTER */
-footer {
-  text-align: center; padding-top: 40px;
-  color: var(--text3); font-size: 12px;
-  font-family: 'IBM Plex Mono', monospace; letter-spacing: 1px;
-}
-footer span { color: var(--violet-bright); }
-
-/* TOOLTIP */
-.tooltip-wrap { position: relative; display: inline-flex; align-items: center; }
-.tooltip-icon { width: 14px; height: 14px; border-radius: 50%; background: var(--border2); color: var(--text3); font-size: 9px; display: inline-flex; align-items: center; justify-content: center; cursor: help; margin-left: 6px; }
-
-@media (max-width: 600px) {
-  .card-body { padding: 16px; }
-  h1 { font-size: 40px; }
-  .tabs { flex-direction: column; }
-  .actions-row { flex-direction: column; }
-}
+:root{--bg:#050508;--surface:#0d0d14;--surface2:#13131e;--border:#1c1c2e;--border2:#252538;--violet:#7b5ea7;--vb:#a78bfa;--cyan:#22d3ee;--amber:#f59e0b;--green:#10b981;--red:#f43f5e;--text:#e8e8f0;--text2:#9090b0;--text3:#555570;--glow:rgba(123,94,167,0.35);}
+[data-theme="light"]{--bg:#f4f4f8;--surface:#fff;--surface2:#f0f0f6;--border:#e0e0ec;--border2:#d0d0e0;--text:#1a1a2e;--text2:#555570;--text3:#9090b0;--glow:rgba(123,94,167,0.2);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(123,94,167,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(123,94,167,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;}
+.orb1{width:500px;height:500px;background:rgba(123,94,167,.12);top:-100px;left:-100px;animation:d1 12s ease-in-out infinite alternate;}
+.orb2{width:400px;height:400px;background:rgba(34,211,238,.08);bottom:-50px;right:-50px;animation:d2 15s ease-in-out infinite alternate;}
+@keyframes d1{to{transform:translate(60px,80px)}}@keyframes d2{to{transform:translate(-60px,-40px)}}
+.wrap{max-width:900px;margin:0 auto;padding:48px 20px 80px;position:relative;z-index:1;}
+@keyframes fs{from{opacity:0;transform:translateY(-24px)}to{opacity:1;transform:translateY(0)}}
+header{margin-bottom:48px;animation:fs .8s ease both;}
+.htop{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.logo{width:44px;height:44px;background:linear-gradient(135deg,var(--violet),var(--cyan));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 24px var(--glow);}
+.brand{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--text);}
+.brand span{color:var(--vb);}
+.vtag{background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.25);color:var(--cyan);font-family:'IBM Plex Mono',monospace;font-size:11px;padding:4px 10px;border-radius:6px;letter-spacing:1px;}
+.hact{margin-left:auto;display:flex;gap:8px;align-items:center;}
+.tbtn{width:36px;height:36px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.tbtn:hover{border-color:var(--violet);color:var(--vb);}
+h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,8vw,80px);line-height:.95;letter-spacing:2px;margin-bottom:16px;}
+h1 .l1{display:block;color:var(--text);}
+h1 .l2{display:block;color:transparent;-webkit-text-stroke:1px rgba(167,139,250,.5);}
+h1 .l3{display:block;background:linear-gradient(90deg,var(--vb),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.sub{color:var(--text2);font-size:15px;font-weight:300;max-width:560px;line-height:1.6;}
+.sub strong{color:var(--cyan);font-weight:500;}
+.badge{display:inline-flex;align-items:center;gap:8px;margin-top:18px;background:linear-gradient(135deg,rgba(123,94,167,.2),rgba(34,211,238,.1));border:1px solid rgba(167,139,250,.3);border-radius:30px;padding:6px 16px;font-size:12px;font-family:'IBM Plex Mono',monospace;color:var(--vb);}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:5px;margin-bottom:28px;animation:fs .8s .1s ease both;}
+.tab{flex:1;padding:13px 20px;border:none;background:transparent;color:var(--text3);font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;border-radius:12px;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.tab.active{background:var(--surface2);color:var(--text);box-shadow:0 1px 0 rgba(255,255,255,.05) inset,0 4px 16px rgba(0,0,0,.4);}
+.tab:not(.active):hover{color:var(--text2);}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:20px;animation:fs .8s .2s ease both;}
+.ch{padding:18px 24px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.015);display:flex;align-items:center;gap:10px;}
+.cdot{width:8px;height:8px;border-radius:50%;}
+.ch h3{font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text2);}
+.cb{padding:24px;}
+.field{margin-bottom:26px;}
+.field:last-child{margin-bottom:0;}
+.fl{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.fl::after{content:'';flex:1;height:1px;background:var(--border);}
+input[type=text],textarea{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:12px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:15px;padding:14px 18px;outline:none;transition:all .2s;resize:none;}
+input[type=text]:focus,textarea:focus{border-color:var(--violet);box-shadow:0 0 0 3px rgba(123,94,167,.12);}
+input[type=text]::placeholder,textarea::placeholder{color:var(--text3);}
+.cc{text-align:right;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text3);margin-top:6px;}
+.pills{display:flex;flex-wrap:wrap;gap:8px;}
+.pill{padding:7px 15px;border-radius:8px;border:1px solid var(--border2);background:var(--bg);color:var(--text3);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;}
+.pill:hover{border-color:var(--violet);color:var(--text2);}
+.pill.sel{border-color:var(--violet);background:rgba(123,94,167,.12);color:var(--vb);font-weight:600;box-shadow:0 0 12px rgba(123,94,167,.15);}
+.sw{display:flex;align-items:center;gap:16px;}
+.ds{flex:1;-webkit-appearance:none;appearance:none;height:4px;background:var(--border2);border-radius:2px;outline:none;}
+.ds::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--cyan));cursor:pointer;box-shadow:0 0 10px var(--glow);}
+.sl{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--cyan);min-width:80px;text-align:right;}
+.sdiv{display:flex;align-items:center;gap:12px;color:var(--text3);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin:8px 0 20px;}
+.sdiv::before,.sdiv::after{content:'';flex:1;height:1px;background:var(--border);}
+.gbtn{width:100%;padding:18px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--violet) 0%,#9333ea 50%,#6366f1 100%);background-size:200% 100%;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;animation:gs 5s ease infinite;}
+@keyframes gs{0%,100%{background-position:0 50%}50%{background-position:100% 50%}}
+.gbtn::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);transform:translateX(-100%);transition:transform .6s;}
+.gbtn:hover::before{transform:translateX(100%);}
+.gbtn:hover{transform:translateY(-2px);box-shadow:0 12px 40px var(--glow);}
+.gbtn:active{transform:translateY(0);}
+.gbtn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.ls{display:none;text-align:center;padding:48px 24px;}
+.ls.vis{display:block;}
+.spin{width:48px;height:48px;margin:0 auto 20px;border:2px solid var(--border2);border-top-color:var(--vb);border-right-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.lt{color:var(--text2);font-size:14px;}
+.lst{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text3);margin-top:6px;}
+.rs{display:none;animation:fs .5s ease both;}
+.rs.vis{display:block;}
+.rc{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:16px;}
+.rh{padding:16px 22px;border-bottom:1px solid var(--border);background:rgba(123,94,167,.05);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.rt{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--vb);display:flex;align-items:center;gap:8px;}
+.rm{color:var(--text3);font-size:10px;font-family:'IBM Plex Mono',monospace;}
+.cab{padding:7px 16px;border-radius:8px;border:1px solid var(--border2);background:var(--bg);color:var(--text2);font-family:'IBM Plex Mono',monospace;font-size:11px;cursor:pointer;transition:all .2s;}
+.cab:hover{border-color:var(--violet);color:var(--vb);}
+.cab.cop{border-color:var(--green);color:var(--green);background:rgba(16,185,129,.08);}
+.rb{padding:20px;display:flex;flex-direction:column;gap:14px;}
+.pi{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:18px;transition:border-color .2s;}
+.pi:hover{border-color:var(--border2);}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.pn{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--cyan);letter-spacing:2px;text-transform:uppercase;}
+.pa{display:flex;gap:6px;flex-wrap:wrap;}
+.as{padding:4px 10px;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--text3);font-size:11px;cursor:pointer;transition:all .2s;font-family:'IBM Plex Mono',monospace;white-space:nowrap;}
+.as:hover{border-color:var(--cyan);color:var(--cyan);}
+.as.fav:hover{border-color:var(--amber);color:var(--amber);}
+.as.fav.sv{border-color:var(--amber);color:var(--amber);background:rgba(245,158,11,.1);}
+.as.ref:hover{border-color:var(--vb);color:var(--vb);}
+.as.shr:hover{border-color:var(--green);color:var(--green);}
+.as.cop{border-color:var(--green);color:var(--green);}
+.ptxt{color:var(--text);font-size:14px;line-height:1.75;font-weight:300;}
+.rl{display:none;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--cyan);margin-top:8px;}
+.rl.vis{display:block;}
+.qw{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.ql{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);flex-shrink:0;}
+.qb{flex:1;height:3px;background:var(--border2);border-radius:2px;overflow:hidden;}
+.qf{height:100%;border-radius:2px;transition:width 1s ease;}
+.qs{font-family:'IBM Plex Mono',monospace;font-size:10px;flex-shrink:0;}
+.ar{display:flex;gap:10px;flex-wrap:wrap;}
+.ab{flex:1;min-width:120px;padding:12px 20px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);font-size:13px;font-family:'Space Grotesk',sans-serif;font-weight:600;cursor:pointer;transition:all .2s;text-align:center;}
+.ab:hover{border-color:var(--violet);color:var(--vb);background:rgba(123,94,167,.08);}
+.eb{display:none;background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.25);border-radius:12px;padding:16px 20px;margin-top:16px;color:#fda4af;font-size:14px;}
+.eb.vis{display:block;}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:20px;margin-bottom:20px;overflow:hidden;}
+.pnh{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
+.pnt{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--text2);display:flex;align-items:center;gap:8px;}
+.pnc{background:var(--border2);color:var(--text3);font-size:10px;padding:2px 8px;border-radius:10px;}
+.ptog{color:var(--text3);font-size:12px;transition:transform .3s;}
+.ptog.op{transform:rotate(180deg);}
+.pnb{padding:16px;display:none;}
+.pnb.op{display:block;}
+.hi,.fi{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:8px;cursor:pointer;transition:border-color .2s;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.hi:hover,.fi:hover{border-color:var(--violet);}
+.hi:last-child,.fi:last-child{margin-bottom:0;}
+.ht{font-size:13px;color:var(--text2);line-height:1.5;flex:1;}
+.hm{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);margin-top:4px;}
+.ia{display:flex;gap:6px;flex-shrink:0;}
+.db{padding:3px 8px;border-radius:5px;border:1px solid var(--border2);background:transparent;color:var(--text3);font-size:10px;cursor:pointer;transition:all .2s;}
+.db:hover{border-color:var(--red);color:var(--red);}
+.es{text-align:center;padding:24px;color:var(--text3);font-size:13px;}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.mo.vis{display:flex;}
+.md{background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:28px;max-width:480px;width:90%;animation:fs .3s ease both;}
+.md h3{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;margin-bottom:16px;color:var(--text);}
+.st{background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:14px;font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:16px;word-break:break-all;}
+.mbs{display:flex;gap:10px;}
+.mb{flex:1;padding:12px;border-radius:10px;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
+.mb.pr{background:linear-gradient(135deg,var(--violet),#6366f1);border-color:transparent;color:#fff;}
+.mb:hover{border-color:var(--violet);color:var(--vb);}
+.mb.pr:hover{opacity:.9;}
+footer{text-align:center;padding-top:40px;color:var(--text3);font-size:12px;font-family:'IBM Plex Mono',monospace;letter-spacing:1px;}
+footer span{color:var(--vb);}
+@media(max-width:600px){.cb{padding:16px;}h1{font-size:40px;}.tabs{flex-direction:column;}.ar{flex-direction:column;}.pa{gap:4px;}}
 </style>
 </head>
 <body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
 
-<div class="orb orb-1"></div>
-<div class="orb orb-2"></div>
+<div class="mo" id="smo">
+  <div class="md">
+    <h3>🔗 Share Prompt</h3>
+    <div class="st" id="stxt"></div>
+    <div class="mbs">
+      <button class="mb" onclick="closeMo()">Close</button>
+      <button class="mb pr" onclick="copyShrTxt()">📋 Copy & Share</button>
+    </div>
+  </div>
+</div>
 
 <div class="wrap">
-
-  <!-- HEADER -->
   <header>
-    <div class="header-top">
-      <div class="logo-mark">⚡</div>
+    <div class="htop">
+      <div class="logo">⚡</div>
       <div class="brand">Prompt<span>Forge</span></div>
-      <div class="version-tag">v3.0 · AI Powered</div>
+      <div class="vtag">v4.0 · AI Powered</div>
+      <div class="hact">
+        <button class="tbtn" onclick="toggleTheme()" id="thbtn" title="Toggle theme">🌙</button>
+      </div>
     </div>
-    <h1>
-      <span class="line1">GENERATE</span>
-      <span class="line2">POWERFUL</span>
-      <span class="line3">AI PROMPTS</span>
-    </h1>
-    <p class="sub">
-      Real <strong>Claude AI</strong> ke saath ultra-detailed prompts banao —
-      Midjourney, DALL·E, Sora, Runway aur text AI ke liye.
-    </p>
-    <div class="ai-badge">
-      <span class="ai-dot"></span>
-      Powered by Groq · Free · Live AI Generation
-    </div>
+    <h1><span class="l1">GENERATE</span><span class="l2">POWERFUL</span><span class="l3">AI PROMPTS</span></h1>
+    <p class="sub">Real <strong>Groq AI</strong> ke saath ultra-detailed prompts banao — Midjourney, DALL·E, Sora, Runway aur text AI ke liye.</p>
+    <div class="badge"><span class="dot"></span>Powered by Groq · Free · Live AI Generation</div>
   </header>
 
-  <!-- TABS -->
   <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('image')" id="tab-image">
-      <span class="tab-icon">🖼️</span> Image Prompt
-    </button>
-    <button class="tab-btn" onclick="switchTab('video')" id="tab-video">
-      <span class="tab-icon">🎬</span> Video Prompt
-    </button>
-    <button class="tab-btn" onclick="switchTab('text')" id="tab-text">
-      <span class="tab-icon">💬</span> Text / Chat AI
-    </button>
+    <button class="tab active" onclick="switchTab('image')" id="tab-image">🖼️ Image</button>
+    <button class="tab" onclick="switchTab('video')" id="tab-video">🎬 Video</button>
+    <button class="tab" onclick="switchTab('text')" id="tab-text">💬 Text AI</button>
   </div>
 
-  <!-- MAIN CARD -->
   <div class="card">
-    <div class="card-header">
-      <div class="card-header-dot" style="background:var(--violet-bright);box-shadow:0 0 8px var(--violet-bright)"></div>
-      <h3 id="card-title">Image Prompt Builder</h3>
+    <div class="ch">
+      <div class="cdot" style="background:var(--vb);box-shadow:0 0 8px var(--vb)"></div>
+      <h3 id="ctitle">Image Prompt Builder</h3>
     </div>
-    <div class="card-body">
+    <div class="cb">
 
-      <!-- ── IMAGE FIELDS ── -->
+      <!-- IMAGE -->
       <div id="image-fields">
         <div class="field">
-          <label class="field-label">Subject / Topic</label>
-          <div class="input-wrap">
-            <input type="text" id="img-keyword" placeholder="e.g. warrior woman, cyberpunk city, magical forest, abstract mind..." maxlength="200" oninput="updateCharCount('img-keyword','img-char')">
-            <div class="char-count" id="img-char">0 / 200</div>
-          </div>
+          <label class="fl">Subject / Topic</label>
+          <input type="text" id="img-kw" placeholder="e.g. warrior woman, cyberpunk city, magical forest..." maxlength="200" oninput="upCC('img-kw','img-cc')">
+          <div class="cc" id="img-cc">0 / 200</div>
         </div>
-
         <div class="field">
-          <label class="field-label">Style</label>
+          <label class="fl">Style</label>
           <div class="pills">
-            <span class="pill selected" data-group="img-style">Photorealistic</span>
-            <span class="pill" data-group="img-style">Cinematic</span>
-            <span class="pill" data-group="img-style">Anime / Manga</span>
-            <span class="pill" data-group="img-style">Oil Painting</span>
-            <span class="pill" data-group="img-style">Watercolor</span>
-            <span class="pill" data-group="img-style">3D Render</span>
-            <span class="pill" data-group="img-style">Dark Fantasy</span>
-            <span class="pill" data-group="img-style">Cyberpunk</span>
-            <span class="pill" data-group="img-style">Minimalist</span>
-            <span class="pill" data-group="img-style">Vintage / Retro</span>
-            <span class="pill" data-group="img-style">Surrealism</span>
-            <span class="pill" data-group="img-style">Comic Book</span>
+            <span class="pill sel" data-g="img-style">Photorealistic</span><span class="pill" data-g="img-style">Cinematic</span><span class="pill" data-g="img-style">Anime / Manga</span><span class="pill" data-g="img-style">Oil Painting</span><span class="pill" data-g="img-style">Watercolor</span><span class="pill" data-g="img-style">3D Render</span><span class="pill" data-g="img-style">Dark Fantasy</span><span class="pill" data-g="img-style">Cyberpunk</span><span class="pill" data-g="img-style">Minimalist</span><span class="pill" data-g="img-style">Vintage / Retro</span><span class="pill" data-g="img-style">Surrealism</span><span class="pill" data-g="img-style">Comic Book</span>
           </div>
         </div>
-
         <div class="field">
-          <label class="field-label">Lighting</label>
+          <label class="fl">Lighting</label>
           <div class="pills">
-            <span class="pill selected" data-group="img-light">Golden Hour</span>
-            <span class="pill" data-group="img-light">Neon Lights</span>
-            <span class="pill" data-group="img-light">Studio Light</span>
-            <span class="pill" data-group="img-light">Moonlight</span>
-            <span class="pill" data-group="img-light">Dramatic Shadows</span>
-            <span class="pill" data-group="img-light">Bioluminescent</span>
-            <span class="pill" data-group="img-light">Overcast Moody</span>
+            <span class="pill sel" data-g="img-light">Golden Hour</span><span class="pill" data-g="img-light">Neon Lights</span><span class="pill" data-g="img-light">Studio Light</span><span class="pill" data-g="img-light">Moonlight</span><span class="pill" data-g="img-light">Dramatic Shadows</span><span class="pill" data-g="img-light">Bioluminescent</span><span class="pill" data-g="img-light">Overcast Moody</span>
           </div>
         </div>
-
         <div class="field">
-          <label class="field-label">Mood / Emotion</label>
+          <label class="fl">Mood</label>
           <div class="pills">
-            <span class="pill selected" data-group="img-mood">Epic & Grand</span>
-            <span class="pill" data-group="img-mood">Mysterious</span>
-            <span class="pill" data-group="img-mood">Peaceful</span>
-            <span class="pill" data-group="img-mood">Dark & Gritty</span>
-            <span class="pill" data-group="img-mood">Whimsical</span>
-            <span class="pill" data-group="img-mood">Romantic</span>
-            <span class="pill" data-group="img-mood">Futuristic</span>
+            <span class="pill sel" data-g="img-mood">Epic & Grand</span><span class="pill" data-g="img-mood">Mysterious</span><span class="pill" data-g="img-mood">Peaceful</span><span class="pill" data-g="img-mood">Dark & Gritty</span><span class="pill" data-g="img-mood">Whimsical</span><span class="pill" data-g="img-mood">Romantic</span><span class="pill" data-g="img-mood">Futuristic</span>
           </div>
         </div>
-
         <div class="field">
-          <label class="field-label">AI Tool</label>
+          <label class="fl">AI Tool</label>
           <div class="pills">
-            <span class="pill selected" data-group="img-tool">Midjourney</span>
-            <span class="pill" data-group="img-tool">DALL·E 3</span>
-            <span class="pill" data-group="img-tool">Stable Diffusion</span>
-            <span class="pill" data-group="img-tool">Ideogram</span>
-            <span class="pill" data-group="img-tool">Adobe Firefly</span>
-            <span class="pill" data-group="img-tool">Flux</span>
+            <span class="pill sel" data-g="img-tool">Midjourney</span><span class="pill" data-g="img-tool">DALL·E 3</span><span class="pill" data-g="img-tool">Stable Diffusion</span><span class="pill" data-g="img-tool">Ideogram</span><span class="pill" data-g="img-tool">Adobe Firefly</span><span class="pill" data-g="img-tool">Flux</span>
           </div>
         </div>
-
-        <div class="section-divider">Advanced Options</div>
-
+        <div class="sdiv">Advanced</div>
         <div class="field">
-          <label class="field-label">Detail Level</label>
-          <div class="slider-wrap">
+          <label class="fl">Detail Level</label>
+          <div class="sw">
             <span style="font-size:11px;color:var(--text3);font-family:'IBM Plex Mono',monospace">Basic</span>
-            <input type="range" class="detail-slider" id="img-detail" min="1" max="3" value="2" oninput="updateDetailLabel(this,'img-detail-lbl')">
+            <input type="range" class="ds" id="img-det" min="1" max="3" value="2" oninput="upDL(this,'img-dl')">
             <span style="font-size:11px;color:var(--text3);font-family:'IBM Plex Mono',monospace">Max</span>
-            <span class="slider-label" id="img-detail-lbl">Medium Detail</span>
+            <span class="sl" id="img-dl">Medium Detail</span>
           </div>
         </div>
       </div>
 
-      <!-- ── VIDEO FIELDS ── -->
-      <div id="video-fields" style="display:none;">
+      <!-- VIDEO -->
+      <div id="video-fields" style="display:none">
         <div class="field">
-          <label class="field-label">Scene / Subject</label>
-          <div class="input-wrap">
-            <input type="text" id="vid-keyword" placeholder="e.g. ocean waves at sunset, spaceship landing, busy Tokyo streets..." maxlength="200" oninput="updateCharCount('vid-keyword','vid-char')">
-            <div class="char-count" id="vid-char">0 / 200</div>
-          </div>
+          <label class="fl">Scene / Subject</label>
+          <input type="text" id="vid-kw" placeholder="e.g. ocean waves at sunset, spaceship landing..." maxlength="200" oninput="upCC('vid-kw','vid-cc')">
+          <div class="cc" id="vid-cc">0 / 200</div>
         </div>
-
         <div class="field">
-          <label class="field-label">Camera Movement</label>
+          <label class="fl">Camera Movement</label>
           <div class="pills">
-            <span class="pill selected" data-group="vid-cam">Slow Zoom In</span>
-            <span class="pill" data-group="vid-cam">Drone Aerial</span>
-            <span class="pill" data-group="vid-cam">Tracking Shot</span>
-            <span class="pill" data-group="vid-cam">Slow Motion</span>
-            <span class="pill" data-group="vid-cam">Timelapse</span>
-            <span class="pill" data-group="vid-cam">POV Immersive</span>
-            <span class="pill" data-group="vid-cam">360° Pan</span>
-            <span class="pill" data-group="vid-cam">Handheld Raw</span>
+            <span class="pill sel" data-g="vid-cam">Slow Zoom In</span><span class="pill" data-g="vid-cam">Drone Aerial</span><span class="pill" data-g="vid-cam">Tracking Shot</span><span class="pill" data-g="vid-cam">Slow Motion</span><span class="pill" data-g="vid-cam">Timelapse</span><span class="pill" data-g="vid-cam">POV Immersive</span><span class="pill" data-g="vid-cam">360° Pan</span><span class="pill" data-g="vid-cam">Handheld Raw</span>
           </div>
         </div>
-
         <div class="field">
-          <label class="field-label">Mood / Atmosphere</label>
+          <label class="fl">Mood</label>
           <div class="pills">
-            <span class="pill selected" data-group="vid-mood">Cinematic Epic</span>
-            <span class="pill" data-group="vid-mood">Peaceful Calm</span>
-            <span class="pill" data-group="vid-mood">Dark Mysterious</span>
-            <span class="pill" data-group="vid-mood">Futuristic</span>
-            <span class="pill" data-group="vid-mood">Romantic</span>
-            <span class="pill" data-group="vid-mood">Action Intense</span>
-            <span class="pill" data-group="vid-mood">Horror Tense</span>
+            <span class="pill sel" data-g="vid-mood">Cinematic Epic</span><span class="pill" data-g="vid-mood">Peaceful Calm</span><span class="pill" data-g="vid-mood">Dark Mysterious</span><span class="pill" data-g="vid-mood">Futuristic</span><span class="pill" data-g="vid-mood">Romantic</span><span class="pill" data-g="vid-mood">Action Intense</span>
           </div>
         </div>
-
         <div class="field">
-          <label class="field-label">Video Duration</label>
+          <label class="fl">Duration</label>
           <div class="pills">
-            <span class="pill selected" data-group="vid-dur">5 seconds</span>
-            <span class="pill" data-group="vid-dur">10 seconds</span>
-            <span class="pill" data-group="vid-dur">15 seconds</span>
-            <span class="pill" data-group="vid-dur">30 seconds</span>
+            <span class="pill sel" data-g="vid-dur">5 seconds</span><span class="pill" data-g="vid-dur">10 seconds</span><span class="pill" data-g="vid-dur">15 seconds</span><span class="pill" data-g="vid-dur">30 seconds</span>
           </div>
         </div>
-
         <div class="field">
-          <label class="field-label">AI Video Tool</label>
+          <label class="fl">AI Video Tool</label>
           <div class="pills">
-            <span class="pill selected" data-group="vid-tool">Sora</span>
-            <span class="pill" data-group="vid-tool">Runway Gen-3</span>
-            <span class="pill" data-group="vid-tool">Kling AI</span>
-            <span class="pill" data-group="vid-tool">Pika Labs</span>
-            <span class="pill" data-group="vid-tool">Luma Dream</span>
-            <span class="pill" data-group="vid-tool">Hailuo AI</span>
+            <span class="pill sel" data-g="vid-tool">Sora</span><span class="pill" data-g="vid-tool">Runway Gen-3</span><span class="pill" data-g="vid-tool">Kling AI</span><span class="pill" data-g="vid-tool">Pika Labs</span><span class="pill" data-g="vid-tool">Luma Dream</span><span class="pill" data-g="vid-tool">Hailuo AI</span>
           </div>
         </div>
-
-        <div class="section-divider">Advanced Options</div>
-
+        <div class="sdiv">Advanced</div>
         <div class="field">
-          <label class="field-label">Detail Level</label>
-          <div class="slider-wrap">
+          <label class="fl">Detail Level</label>
+          <div class="sw">
             <span style="font-size:11px;color:var(--text3);font-family:'IBM Plex Mono',monospace">Basic</span>
-            <input type="range" class="detail-slider" id="vid-detail" min="1" max="3" value="2" oninput="updateDetailLabel(this,'vid-detail-lbl')">
+            <input type="range" class="ds" id="vid-det" min="1" max="3" value="2" oninput="upDL(this,'vid-dl')">
             <span style="font-size:11px;color:var(--text3);font-family:'IBM Plex Mono',monospace">Max</span>
-            <span class="slider-label" id="vid-detail-lbl">Medium Detail</span>
+            <span class="sl" id="vid-dl">Medium Detail</span>
           </div>
         </div>
       </div>
 
-      <!-- ── TEXT / CHAT AI FIELDS ── -->
-      <div id="text-fields" style="display:none;">
+      <!-- TEXT -->
+      <div id="text-fields" style="display:none">
         <div class="field">
-          <label class="field-label">Task / Goal</label>
-          <div class="input-wrap">
-            <textarea id="txt-keyword" rows="3" placeholder="e.g. write a product description for a shoe brand, help me debug Python code, explain quantum computing simply..." maxlength="400" oninput="updateCharCount('txt-keyword','txt-char')"></textarea>
-            <div class="char-count" id="txt-char">0 / 400</div>
-          </div>
+          <label class="fl">Task / Goal</label>
+          <textarea id="txt-kw" rows="3" placeholder="e.g. write a product description, help me debug Python code..." maxlength="400" oninput="upCC('txt-kw','txt-cc')"></textarea>
+          <div class="cc" id="txt-cc">0 / 400</div>
         </div>
-
         <div class="field">
-          <label class="field-label">Prompt Type</label>
+          <label class="fl">Prompt Type</label>
           <div class="pills">
-            <span class="pill selected" data-group="txt-type">Detailed Instruction</span>
-            <span class="pill" data-group="txt-type">Role-Play / Persona</span>
-            <span class="pill" data-group="txt-type">Chain of Thought</span>
-            <span class="pill" data-group="txt-type">Creative Writing</span>
-            <span class="pill" data-group="txt-type">Code / Technical</span>
-            <span class="pill" data-group="txt-type">Research / Analysis</span>
+            <span class="pill sel" data-g="txt-type">Detailed Instruction</span><span class="pill" data-g="txt-type">Role-Play / Persona</span><span class="pill" data-g="txt-type">Chain of Thought</span><span class="pill" data-g="txt-type">Creative Writing</span><span class="pill" data-g="txt-type">Code / Technical</span><span class="pill" data-g="txt-type">Research / Analysis</span>
           </div>
         </div>
-
         <div class="field">
-          <label class="field-label">Tone</label>
+          <label class="fl">Tone</label>
           <div class="pills">
-            <span class="pill selected" data-group="txt-tone">Professional</span>
-            <span class="pill" data-group="txt-tone">Casual & Friendly</span>
-            <span class="pill" data-group="txt-tone">Academic / Formal</span>
-            <span class="pill" data-group="txt-tone">Humorous</span>
-            <span class="pill" data-group="txt-tone">Empathetic</span>
-            <span class="pill" data-group="txt-tone">Persuasive</span>
+            <span class="pill sel" data-g="txt-tone">Professional</span><span class="pill" data-g="txt-tone">Casual & Friendly</span><span class="pill" data-g="txt-tone">Academic</span><span class="pill" data-g="txt-tone">Humorous</span><span class="pill" data-g="txt-tone">Persuasive</span>
           </div>
         </div>
-
         <div class="field">
-          <label class="field-label">Target AI</label>
+          <label class="fl">Target AI</label>
           <div class="pills">
-            <span class="pill selected" data-group="txt-tool">ChatGPT / GPT-4</span>
-            <span class="pill" data-group="txt-tool">Claude</span>
-            <span class="pill" data-group="txt-tool">Gemini</span>
-            <span class="pill" data-group="txt-tool">Universal</span>
+            <span class="pill sel" data-g="txt-tool">ChatGPT / GPT-4</span><span class="pill" data-g="txt-tool">Claude</span><span class="pill" data-g="txt-tool">Gemini</span><span class="pill" data-g="txt-tool">Universal</span>
           </div>
         </div>
-
-        <div class="section-divider">Advanced Options</div>
-
         <div class="field">
-          <label class="field-label">Output Length</label>
+          <label class="fl">Output Length</label>
           <div class="pills">
-            <span class="pill selected" data-group="txt-len">Concise</span>
-            <span class="pill" data-group="txt-len">Medium</span>
-            <span class="pill" data-group="txt-len">Detailed</span>
-            <span class="pill" data-group="txt-len">Exhaustive</span>
+            <span class="pill sel" data-g="txt-len">Concise</span><span class="pill" data-g="txt-len">Medium</span><span class="pill" data-g="txt-len">Detailed</span><span class="pill" data-g="txt-len">Exhaustive</span>
           </div>
         </div>
       </div>
 
-      <!-- GENERATE BUTTON -->
-      <div style="margin-top:28px;">
-        <button class="generate-btn" onclick="generatePrompt()" id="gen-btn">
-          ⚡ GENERATE WITH AI
-        </button>
+      <div style="margin-top:28px">
+        <button class="gbtn" onclick="generate()" id="gbtn">⚡ GENERATE WITH AI</button>
       </div>
-
-      <!-- LOADING -->
-      <div class="loading-state" id="loading">
-        <div class="spinner"></div>
-        <div class="loading-text">Groq AI prompt bana raha hai...</div>
-        <div class="loading-subtext" id="loading-sub">Analyzing your inputs · Building context · Optimizing details</div>
+      <div class="ls" id="ls">
+        <div class="spin"></div>
+        <div class="lt">Groq AI prompt bana raha hai...</div>
+        <div class="lst" id="lst">Analyzing inputs · Building context · Optimizing...</div>
       </div>
-
-      <!-- ERROR -->
-      <div class="error-box" id="error-box">
-        ⚠️ <span id="error-msg">Kuch error aaya. Dobara try karein.</span>
-      </div>
+      <div class="eb" id="eb">⚠️ <span id="emsg"></span></div>
     </div>
   </div>
 
   <!-- RESULTS -->
-  <div class="result-section" id="result-section">
-    <div class="result-card">
-      <div class="result-header">
+  <div class="rs" id="rs">
+    <div class="rc">
+      <div class="rh">
         <div>
-          <div class="result-title">
-            ⚡ <span id="result-label">Generated Prompts</span>
-          </div>
-          <div class="result-meta" id="result-meta"></div>
+          <div class="rt">⚡ <span id="rlbl">Generated Prompts</span></div>
+          <div class="rm" id="rmeta"></div>
         </div>
-        <button class="copy-all-btn" id="copy-all-btn" onclick="copyAll()">Copy All</button>
+        <button class="cab" id="cabtn" onclick="copyAll()">Copy All</button>
       </div>
-      <div class="result-body" id="result-body"></div>
+      <div class="rb" id="rb"></div>
     </div>
-    <div class="actions-row">
-      <button class="action-btn" onclick="generatePrompt()">🔀 New Variations</button>
-      <button class="action-btn" onclick="clearResults()">✕ Clear</button>
+    <div class="ar">
+      <button class="ab" onclick="generate()">🔀 New Variations</button>
+      <button class="ab" onclick="clearRes()">✕ Clear</button>
     </div>
   </div>
 
-  <footer>
-    Made with ❤️ · Powered by <span>Groq AI</span> · PromptForge v3
-  </footer>
+  <!-- FAVOURITES -->
+  <div class="panel">
+    <div class="pnh" onclick="togPanel('fav')">
+      <div class="pnt">⭐ Favourites <span class="pnc" id="fc">0</span></div>
+      <span class="ptog" id="ftog">▼</span>
+    </div>
+    <div class="pnb" id="fb">
+      <div class="es" id="fe">Koi favourite nahi hai. ♡ Save dabao!</div>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="panel">
+    <div class="pnh" onclick="togPanel('hist')">
+      <div class="pnt">🕐 History <span class="pnc" id="hc">0</span></div>
+      <span class="ptog" id="htog">▼</span>
+    </div>
+    <div class="pnb" id="hb">
+      <div class="es" id="he">Koi history nahi hai abhi.</div>
+    </div>
+  </div>
+
+  <footer>Made with ❤️ · Powered by <span>Groq AI</span> · PromptForge v4</footer>
 </div>
 
 <script>
-// ── STATE ────────────────────────────────────────────────
-let currentTab = 'image';
-let selected = {};
-let lastPrompts = [];
+const KEY='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';
+let tab='image',sel={},prompts=[],favs=[],hist=[];
 
-// ── INIT PILLS ───────────────────────────────────────────
-document.querySelectorAll('.pill').forEach(pill => {
-  const group = pill.dataset.group;
-  pill.addEventListener('click', () => {
-    document.querySelectorAll(`[data-group="${group}"]`).forEach(p => p.classList.remove('selected'));
-    pill.classList.add('selected');
-    selected[group] = pill.textContent.trim();
+// Load saved data safely
+try{favs=JSON.parse(localStorage.getItem('pf_f')||'[]');}catch(e){favs=[];}
+try{hist=JSON.parse(localStorage.getItem('pf_h')||'[]');}catch(e){hist=[];}
+
+// Pills
+document.querySelectorAll('.pill').forEach(p=>{
+  const g=p.dataset.g;
+  p.addEventListener('click',()=>{
+    document.querySelectorAll(`[data-g="${g}"]`).forEach(x=>x.classList.remove('sel'));
+    p.classList.add('sel');sel[g]=p.textContent.trim();
   });
-  if (pill.classList.contains('selected')) {
-    selected[group] = pill.textContent.trim();
-  }
+  if(p.classList.contains('sel'))sel[g]=p.textContent.trim();
 });
 
-// ── TAB SWITCH ───────────────────────────────────────────
-function switchTab(tab) {
-  currentTab = tab;
-  ['image','video','text'].forEach(t => {
-    document.getElementById(t+'-fields').style.display = tab === t ? 'block' : 'none';
-    document.getElementById('tab-'+t).classList.toggle('active', tab === t);
+// Theme
+function toggleTheme(){
+  const d=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',d?'light':'dark');
+  document.getElementById('thbtn').textContent=d?'☀️':'🌙';
+  try{localStorage.setItem('pf_t',d?'light':'dark');}catch(e){}
+}
+try{const t=localStorage.getItem('pf_t')||'dark';document.documentElement.setAttribute('data-theme',t);document.getElementById('thbtn').textContent=t==='dark'?'🌙':'☀️';}catch(e){}
+
+function switchTab(t){
+  tab=t;
+  ['image','video','text'].forEach(x=>{
+    document.getElementById(x+'-fields').style.display=t===x?'block':'none';
+    document.getElementById('tab-'+x).classList.toggle('active',t===x);
   });
-  const titles = { image: 'Image Prompt Builder', video: 'Video Prompt Builder', text: 'Text / Chat AI Prompt Builder' };
-  document.getElementById('card-title').textContent = titles[tab];
-  document.getElementById('result-section').classList.remove('visible');
-  hideError();
+  document.getElementById('ctitle').textContent={image:'Image Prompt Builder',video:'Video Prompt Builder',text:'Text / Chat AI Builder'}[t];
+  document.getElementById('rs').classList.remove('vis');
+  document.getElementById('eb').classList.remove('vis');
 }
 
-// ── HELPERS ──────────────────────────────────────────────
-function updateCharCount(inputId, countId) {
-  const el = document.getElementById(inputId);
-  const count = document.getElementById(countId);
-  count.textContent = `${el.value.length} / ${el.maxLength}`;
+function upCC(i,c){const e=document.getElementById(i);document.getElementById(c).textContent=`${e.value.length} / ${e.maxLength}`;}
+function upDL(s,l){document.getElementById(l).textContent={1:'Basic Detail',2:'Medium Detail',3:'Max Detail'}[s.value];}
+function showErr(m){document.getElementById('emsg').textContent=m;document.getElementById('eb').classList.add('vis');}
+function setLoad(on){document.getElementById('ls').classList.toggle('vis',on);document.getElementById('gbtn').disabled=on;document.getElementById('gbtn').textContent=on?'⏳ Generating...':'⚡ GENERATE WITH AI';}
+function clearRes(){document.getElementById('rs').classList.remove('vis');prompts=[];}
+function togPanel(t){const b=document.getElementById(t==='fav'?'fb':'hb'),g=document.getElementById(t==='fav'?'ftog':'htog');b.classList.toggle('op');g.classList.toggle('op');}
+
+function sysPrompt(){
+  const d=document.getElementById(tab==='video'?'vid-det':'img-det')?.value||'2';
+  const di=d==='1'?'30-50 words each':d==='2'?'60-90 words each':'100-150 words each with color palette, texture, composition, technical parameters';
+  if(tab==='image')return`You are an expert AI image prompt engineer. Generate exactly 3 unique image prompts.\nRules:\n- Each prompt must be distinct\n- Length: ${di}\n- Include artistic details: composition, color palette, lighting, texture\n- Return ONLY a JSON array: ["p1","p2","p3"]`;
+  if(tab==='video')return`You are an expert AI video prompt engineer. Generate exactly 3 unique video prompts.\nRules:\n- Each prompt must be distinct\n- Length: ${di}\n- Include camera movement, color grade, timing\n- Return ONLY a JSON array: ["p1","p2","p3"]`;
+  return`You are an expert prompt engineer. Generate exactly 3 ready-to-use prompts for text AI.\nRules:\n- Each must be complete and actionable\n- Include context, role, instructions, output format\n- Return ONLY a JSON array: ["p1","p2","p3"]`;
 }
 
-function updateDetailLabel(slider, labelId) {
-  const labels = { '1': 'Basic Detail', '2': 'Medium Detail', '3': 'Max Detail' };
-  document.getElementById(labelId).textContent = labels[slider.value];
+function userMsg(){
+  const tp={'Midjourney':' --ar 16:9 --v 6.1 --stylize 750 --quality 2','DALL·E 3':' | high quality, 4K','Stable Diffusion':', masterpiece, best quality, 4k','Ideogram':' | high quality','Adobe Firefly':' | professional quality','Flux':', ultra detailed, 8K'};
+  if(tab==='image'){const kw=document.getElementById('img-kw').value.trim()||'mysterious scene';return`Subject: "${kw}"\nStyle: ${sel['img-style']||'Photorealistic'}\nLighting: ${sel['img-light']||'Golden Hour'}\nMood: ${sel['img-mood']||'Epic & Grand'}\nTool: ${sel['img-tool']||'Midjourney'}\nAppend params: ${tp[sel['img-tool']]||''}\nGenerate 3 unique image prompts.`;}
+  if(tab==='video'){const kw=document.getElementById('vid-kw').value.trim()||'cinematic landscape';return`Scene: "${kw}"\nCamera: ${sel['vid-cam']||'Slow Zoom In'}\nMood: ${sel['vid-mood']||'Cinematic Epic'}\nDuration: ${sel['vid-dur']||'10 seconds'}\nTool: ${sel['vid-tool']||'Sora'}\nGenerate 3 unique video prompts.`;}
+  const kw=document.getElementById('txt-kw').value.trim()||'help me with a task';
+  return`Task: "${kw}"\nType: ${sel['txt-type']||'Detailed Instruction'}\nTone: ${sel['txt-tone']||'Professional'}\nTarget AI: ${sel['txt-tool']||'ChatGPT / GPT-4'}\nLength: ${sel['txt-len']||'Medium'}\nGenerate 3 unique text prompts.`;
 }
 
-function showError(msg) {
-  const box = document.getElementById('error-box');
-  document.getElementById('error-msg').textContent = msg;
-  box.classList.add('visible');
-}
-function hideError() { document.getElementById('error-box').classList.remove('visible'); }
-
-function setLoading(on) {
-  document.getElementById('loading').classList.toggle('visible', on);
-  document.getElementById('gen-btn').disabled = on;
-  document.getElementById('gen-btn').textContent = on ? '⏳ Generating...' : '⚡ GENERATE WITH AI';
+async function callGroq(sys,usr){
+  const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${KEY}`},body:JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:1000,temperature:0.85,messages:[{role:'system',content:sys},{role:'user',content:usr}]})});
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||`API Error: ${r.status}`);}
+  const d=await r.json();return d.choices?.[0]?.message?.content||'';
 }
 
-function clearResults() {
-  document.getElementById('result-section').classList.remove('visible');
-  lastPrompts = [];
+async function generate(){
+  document.getElementById('eb').classList.remove('vis');
+  setLoad(true);
+  document.getElementById('rs').classList.remove('vis');
+  const msgs=['Groq AI analyzing inputs...','Crafting unique variations...','Adding rich details...','Optimizing for your tool...'];
+  let mi=0;const iv=setInterval(()=>{document.getElementById('lst').textContent=msgs[++mi%msgs.length];},1200);
+  try{
+    const raw=await callGroq(sysPrompt(),userMsg());
+    const clean=raw.replace(/```json|```/g,'').trim();
+    const ps=JSON.parse(clean);
+    if(!Array.isArray(ps)||!ps.length)throw new Error('Invalid response from AI');
+    prompts=ps;
+    addHist(ps);
+    renderRes(ps);
+  }catch(err){showErr(err.message);}
+  finally{clearInterval(iv);setLoad(false);}
 }
 
-// ── BUILD SYSTEM PROMPT ──────────────────────────────────
-function buildSystemPrompt() {
-  if (currentTab === 'image') {
-    const detail = document.getElementById('img-detail').value;
-    const detailInstr = detail === '1'
-      ? 'Keep prompts concise, around 30-50 words each.'
-      : detail === '2'
-      ? 'Make prompts moderately detailed, around 60-90 words each.'
-      : 'Make prompts extremely detailed and rich, around 100-150 words each. Include color palette, texture details, composition notes, and technical camera/rendering parameters.';
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-    return `You are an expert AI image prompt engineer. Generate exactly 3 highly effective, unique image prompts for AI image generation tools.
-
-Rules:
-- Each prompt must be distinct and creative — no repetition
-- ${detailInstr}
-- Include specific artistic details: composition, color palette, lighting nuances, texture, depth
-- Naturally incorporate the style, lighting, and mood into each prompt
-- End each prompt with the appropriate tool-specific parameters
-- Do NOT use generic filler words
-- Return ONLY a JSON array with exactly 3 strings, nothing else
-- Format: ["prompt1", "prompt2", "prompt3"]`;
-
-  } else if (currentTab === 'video') {
-    const detail = document.getElementById('vid-detail').value;
-    const detailInstr = detail === '1'
-      ? 'Keep prompts concise, around 30-50 words each.'
-      : detail === '2'
-      ? 'Make prompts moderately detailed, around 60-90 words each.'
-      : 'Make prompts extremely detailed, around 100-140 words each. Include precise camera movement description, color grading, sound direction hints, and transition details.';
-
-    return `You are an expert AI video prompt engineer. Generate exactly 3 highly effective, unique video prompts for AI video generation tools.
-
-Rules:
-- Each prompt must be distinct with different creative approaches
-- ${detailInstr}
-- Include camera movement, lighting transitions, color grade, and timing
-- Describe the emotional arc and visual flow of the video
-- Include tool-specific parameters at the end
-- Return ONLY a JSON array with exactly 3 strings, nothing else
-- Format: ["prompt1", "prompt2", "prompt3"]`;
-
-  } else {
-    return `You are an expert prompt engineer for text AI models. Generate exactly 3 highly effective, unique prompts optimized for text AI assistants.
-
-Rules:
-- Each prompt must be a complete, ready-to-use prompt (not a description of a prompt)
-- Include clear context, role assignment if needed, specific instructions, and output format guidance
-- Make prompts specific and actionable — avoid vague instructions
-- Tailor to the specified prompt type, tone, and output length
-- Return ONLY a JSON array with exactly 3 strings, nothing else
-- Format: ["prompt1", "prompt2", "prompt3"]`;
-  }
-}
-
-// ── BUILD USER MESSAGE ───────────────────────────────────
-function buildUserMessage() {
-  if (currentTab === 'image') {
-    const kw = document.getElementById('img-keyword').value.trim() || 'a beautiful mysterious scene';
-    const style = selected['img-style'] || 'Photorealistic';
-    const light = selected['img-light'] || 'Golden Hour';
-    const mood = selected['img-mood'] || 'Epic & Grand';
-    const tool = selected['img-tool'] || 'Midjourney';
-
-    const toolParams = {
-      'Midjourney': ' --ar 16:9 --v 6.1 --stylize 750 --quality 2',
-      'DALL·E 3': ' | high quality, detailed, 4K',
-      'Stable Diffusion': ', masterpiece, best quality, highly detailed, 4k, (perfect composition:1.3)',
-      'Ideogram': ' | high quality illustration, typography-friendly',
-      'Adobe Firefly': ' | professional quality, commercial use, detailed',
-      'Flux': ', ultra detailed, photorealistic, 8K resolution'
-    };
-
-    return `Subject: "${kw}"
-Style: ${style}
-Lighting: ${light}
-Mood: ${mood}
-Target Tool: ${tool}
-Tool Parameters to append: ${toolParams[tool] || ''}
-
-Generate 3 unique, powerful image prompts for this subject.`;
-
-  } else if (currentTab === 'video') {
-    const kw = document.getElementById('vid-keyword').value.trim() || 'a dramatic cinematic landscape';
-    const cam = selected['vid-cam'] || 'Slow Zoom In';
-    const mood = selected['vid-mood'] || 'Cinematic Epic';
-    const dur = selected['vid-dur'] || '10 seconds';
-    const tool = selected['vid-tool'] || 'Sora';
-
-    const toolParams = {
-      'Sora': `duration: ${dur}, aspect_ratio: 16:9, quality: high`,
-      'Runway Gen-3': `duration: ${dur}, cinematic quality, 4K`,
-      'Kling AI': `duration: ${dur}, smooth motion, high quality`,
-      'Pika Labs': `duration: ${dur}, HD, smooth`,
-      'Luma Dream': `duration: ${dur}, dream motion, cinematic`,
-      'Hailuo AI': `duration: ${dur}, high quality, smooth`
-    };
-
-    return `Scene/Subject: "${kw}"
-Camera Movement: ${cam}
-Mood/Atmosphere: ${mood}
-Duration: ${dur}
-Target Tool: ${tool}
-Tool Parameters: ${toolParams[tool] || dur}
-
-Generate 3 unique, powerful video prompts for this scene.`;
-
-  } else {
-    const kw = document.getElementById('txt-keyword').value.trim() || 'help me with a task';
-    const type = selected['txt-type'] || 'Detailed Instruction';
-    const tone = selected['txt-tone'] || 'Professional';
-    const tool = selected['txt-tool'] || 'ChatGPT / GPT-4';
-    const len = selected['txt-len'] || 'Medium';
-
-    return `Task/Goal: "${kw}"
-Prompt Type: ${type}
-Tone: ${tone}
-Target AI: ${tool}
-Output Length Required: ${len}
-
-Generate 3 unique, highly effective text prompts for this goal.`;
-  }
-}
-
-// ── GENERATE ─────────────────────────────────────────────
-async function generatePrompt() {
-  hideError();
-  setLoading(true);
-  document.getElementById('result-section').classList.remove('visible');
-
-  const loadingMsgs = [
-    'Claude AI analyzing your inputs...',
-    'Crafting unique prompt variations...',
-    'Adding rich details and parameters...',
-    'Optimizing for your selected tool...'
-  ];
-  let msgIdx = 0;
-  const loadingInterval = setInterval(() => {
-    msgIdx = (msgIdx + 1) % loadingMsgs.length;
-    document.getElementById('loading-sub').textContent = loadingMsgs[msgIdx];
-  }, 1200);
-
-  const GROQ_API_KEY = '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'; // gsk_... key yahan paste karo
-
-  try {
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GROQ_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        max_tokens: 1000,
-        temperature: 0.85,
-        messages: [
-          { role: 'system', content: buildSystemPrompt() },
-          { role: 'user', content: buildUserMessage() }
-        ]
-      })
-    });
-
-    if (!response.ok) {
-      const errData = await response.json().catch(() => ({}));
-      throw new Error(errData.error?.message || `API Error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const raw = data.choices?.[0]?.message?.content || '';
-    const clean = raw.replace(/```json|```/g, '').trim();
-    const prompts = JSON.parse(clean);
-
-    if (!Array.isArray(prompts) || prompts.length === 0) throw new Error('Invalid response format');
-
-    lastPrompts = prompts;
-    renderResults(prompts);
-
-  } catch (err) {
-    console.error(err);
-    showError('AI generation failed. Please try again. Error: ' + err.message);
-  } finally {
-    clearInterval(loadingInterval);
-    setLoading(false);
-  }
-}
-
-// ── RENDER RESULTS ───────────────────────────────────────
-function renderResults(prompts) {
-  const tool = selected['img-tool'] || selected['vid-tool'] || selected['txt-tool'] || '';
-  const tabLabel = { image: 'Image', video: 'Video', text: 'Text AI' }[currentTab];
-  document.getElementById('result-label').textContent = `${tool} ${tabLabel} Prompts`;
-  document.getElementById('result-meta').textContent = `${prompts.length} prompts · AI generated · ${new Date().toLocaleTimeString()}`;
-
-  const body = document.getElementById('result-body');
-  body.innerHTML = prompts.map((p, i) => {
-    const wordCount = p.split(' ').length;
-    const quality = Math.min(95, 60 + wordCount * 0.5 + (p.includes(',') ? 10 : 0));
-    const qColor = quality > 80 ? 'var(--green)' : quality > 60 ? 'var(--cyan)' : 'var(--amber)';
-    const qLabel = quality > 80 ? 'High Quality' : quality > 60 ? 'Good' : 'Basic';
-
-    return `
-    <div class="prompt-item" id="prompt-${i}">
-      <div class="prompt-item-header">
-        <div class="prompt-num">Prompt ${i + 1} of ${prompts.length}</div>
-        <div class="prompt-actions">
-          <button class="copy-single" onclick="copySingle(this, ${i})">Copy</button>
+function renderRes(ps){
+  const tool=sel['img-tool']||sel['vid-tool']||sel['txt-tool']||'';
+  document.getElementById('rlbl').textContent=`${tool} Prompts`;
+  document.getElementById('rmeta').textContent=`${ps.length} prompts · ${new Date().toLocaleTimeString()}`;
+  document.getElementById('rb').innerHTML=ps.map((p,i)=>{
+    const wc=p.split(' ').length;const q=Math.min(95,60+wc*0.5+(p.includes(',')?10:0));
+    const qc=q>80?'var(--green)':q>60?'var(--cyan)':'var(--amber)';
+    const ql=q>80?'High Quality':q>60?'Good':'Basic';
+    const isFav=favs.some(f=>f.text===p);
+    return`<div class="pi" id="pi-${i}">
+      <div class="ph">
+        <div class="pn">Prompt ${i+1} of ${ps.length}</div>
+        <div class="pa">
+          <button class="as" onclick="copyOne(this,${i})">📋 Copy</button>
+          <button class="as fav ${isFav?'sv':''}" onclick="togFav(this,${i})">${isFav?'⭐ Saved':'♡ Save'}</button>
+          <button class="as ref" onclick="refine(this,${i})">✨ Refine</button>
+          <button class="as shr" onclick="sharePr(${i})">🔗 Share</button>
         </div>
       </div>
-      <div class="prompt-text">${escapeHtml(p)}</div>
-      <div class="quality-bar-wrap">
-        <span class="quality-label">Prompt Quality</span>
-        <div class="quality-bar">
-          <div class="quality-fill" id="qfill-${i}" style="width:0%;background:${qColor}" data-q="${quality}"></div>
-        </div>
-        <span class="quality-score" style="color:${qColor}">${qLabel} · ${Math.round(quality)}%</span>
+      <div class="ptxt" id="pt-${i}">${esc(p)}</div>
+      <div class="rl" id="rl-${i}">✨ AI refine kar raha hai...</div>
+      <div class="qw">
+        <span class="ql">Quality</span>
+        <div class="qb"><div class="qf" id="qf-${i}" style="width:0%;background:${qc}" data-q="${q}"></div></div>
+        <span class="qs" style="color:${qc}">${ql} · ${Math.round(q)}%</span>
       </div>
     </div>`;
   }).join('');
-
-  document.getElementById('result-section').classList.add('visible');
-  document.getElementById('result-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-  // Animate quality bars
-  setTimeout(() => {
-    prompts.forEach((_, i) => {
-      const fill = document.getElementById(`qfill-${i}`);
-      if (fill) fill.style.width = fill.dataset.q + '%';
-    });
-  }, 200);
+  document.getElementById('rs').classList.add('vis');
+  document.getElementById('rs').scrollIntoView({behavior:'smooth',block:'start'});
+  setTimeout(()=>ps.forEach((_,i)=>{const f=document.getElementById(`qf-${i}`);if(f)f.style.width=f.dataset.q+'%';}),200);
 }
 
-function escapeHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+async function refine(btn,idx){
+  const orig=prompts[idx];btn.disabled=true;btn.textContent='⏳';
+  document.getElementById(`rl-${idx}`).classList.add('vis');
+  try{
+    const raw=await callGroq('You are an expert prompt engineer. Improve the given AI prompt to make it more detailed, specific, and effective. Return ONLY the improved prompt text, nothing else.',`Improve this prompt:\n\n${orig}`);
+    const ref=raw.replace(/```/g,'').trim();
+    prompts[idx]=ref;
+    document.getElementById(`pt-${idx}`).textContent=ref;
+    btn.textContent='✅ Refined';
+    setTimeout(()=>{btn.textContent='✨ Refine';btn.disabled=false;},2000);
+  }catch(e){btn.textContent='✨ Refine';btn.disabled=false;alert('Refine failed: '+e.message);}
+  finally{document.getElementById(`rl-${idx}`).classList.remove('vis');}
 }
 
-// ── COPY ─────────────────────────────────────────────────
-function copySingle(btn, idx) {
-  navigator.clipboard.writeText(lastPrompts[idx]).then(() => {
-    btn.textContent = '✓ Copied!';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+function togFav(btn,idx){
+  const text=prompts[idx];const ei=favs.findIndex(f=>f.text===text);
+  if(ei>=0){favs.splice(ei,1);btn.textContent='♡ Save';btn.classList.remove('sv');}
+  else{favs.unshift({text,time:new Date().toLocaleString(),tab});btn.textContent='⭐ Saved';btn.classList.add('sv');}
+  try{localStorage.setItem('pf_f',JSON.stringify(favs));}catch(e){}
+  renderFavs();
+}
+
+function renderFavs(){
+  document.getElementById('fc').textContent=favs.length;
+  const b=document.getElementById('fb');
+  document.getElementById('fe').style.display=favs.length?'none':'block';
+  b.querySelectorAll('.fi').forEach(e=>e.remove());
+  favs.forEach((f,i)=>{
+    const d=document.createElement('div');d.className='fi';
+    d.innerHTML=`<div><div class="ht">${esc(f.text.substring(0,120))}${f.text.length>120?'...':''}</div><div class="hm">${f.tab} · ${f.time}</div></div><div class="ia"><button class="as" onclick="navigator.clipboard.writeText(${JSON.stringify(f.text)}).then(()=>{this.textContent='✓';setTimeout(()=>this.textContent='Copy',1500)})">Copy</button><button class="db" onclick="delFav(${i})">✕</button></div>`;
+    b.appendChild(d);
   });
 }
 
-function copyAll() {
-  const btn = document.getElementById('copy-all-btn');
-  navigator.clipboard.writeText(lastPrompts.join('\n\n---\n\n')).then(() => {
-    btn.textContent = '✓ All Copied!';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'Copy All'; btn.classList.remove('copied'); }, 2000);
+function delFav(i){favs.splice(i,1);try{localStorage.setItem('pf_f',JSON.stringify(favs));}catch(e){}renderFavs();}
+
+function addHist(ps){
+  const e={prompts:ps,tab,tool:sel['img-tool']||sel['vid-tool']||sel['txt-tool']||'',time:new Date().toLocaleString()};
+  hist.unshift(e);if(hist.length>20)hist=hist.slice(0,20);
+  try{localStorage.setItem('pf_h',JSON.stringify(hist));}catch(e){}
+  renderHist();
+}
+
+function renderHist(){
+  document.getElementById('hc').textContent=hist.length;
+  const b=document.getElementById('hb');
+  document.getElementById('he').style.display=hist.length?'none':'block';
+  b.querySelectorAll('.hi').forEach(e=>e.remove());
+  hist.forEach((h,i)=>{
+    const d=document.createElement('div');d.className='hi';
+    d.innerHTML=`<div><div class="ht">${esc(h.prompts[0].substring(0,100))}...</div><div class="hm">${h.tab} · ${h.tool} · ${h.time}</div></div><div class="ia"><button class="db" onclick="event.stopPropagation();delHist(${i})">✕</button></div>`;
+    d.onclick=(e)=>{if(e.target.classList.contains('db'))return;prompts=h.prompts;renderRes(h.prompts);};
+    b.appendChild(d);
   });
 }
+
+function delHist(i){hist.splice(i,1);try{localStorage.setItem('pf_h',JSON.stringify(hist));}catch(e){}renderHist();}
+
+function sharePr(idx){
+  document.getElementById('stxt').textContent=prompts[idx];
+  document.getElementById('smo').classList.add('vis');
+}
+function closeMo(){document.getElementById('smo').classList.remove('vis');}
+function copyShrTxt(){
+  const t=document.getElementById('stxt').textContent;
+  const url='https://992max.github.io/promptforge/';
+  navigator.clipboard.writeText(`🎨 AI Prompt by PromptForge:\n\n${t}\n\n✨ Free prompts: ${url}`);
+  const b=document.querySelector('.mb.pr');b.textContent='✓ Copied!';
+  setTimeout(()=>{b.textContent='📋 Copy & Share';closeMo();},1500);
+}
+document.getElementById('smo').addEventListener('click',function(e){if(e.target===this)closeMo();});
+
+function copyOne(btn,idx){navigator.clipboard.writeText(prompts[idx]).then(()=>{btn.textContent='✓ Copied!';btn.classList.add('cop');setTimeout(()=>{btn.textContent='📋 Copy';btn.classList.remove('cop');},1800);});}
+function copyAll(){const b=document.getElementById('cabtn');navigator.clipboard.writeText(prompts.join('\n\n---\n\n')).then(()=>{b.textContent='✓ Copied!';b.classList.add('cop');setTimeout(()=>{b.textContent='Copy All';b.classList.remove('cop');},2000);});}
+
+renderFavs();renderHist();
 </script>
 </body>
 </html>
-
