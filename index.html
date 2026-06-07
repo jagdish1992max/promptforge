@@ -744,26 +744,38 @@ let currentTab = 'image';
 let selected = {};
 let lastPrompts = [];
 
-// ── INIT PILLS ───────────────────────────────────────────
-document.querySelectorAll('.pill').forEach(pill => {
-  const group = pill.dataset.group;
-  pill.addEventListener('click', () => {
-    document.querySelectorAll(`[data-group="${group}"]`).forEach(p => p.classList.remove('selected'));
-    pill.classList.add('selected');
-    selected[group] = pill.textContent.trim();
+// ── FIXED AND CLEANED INITIALIZATION ─────────────────────
+function initPills() {
+  document.querySelectorAll('.pill').forEach(pill => {
+    const group = pill.dataset.group;
+    
+    // Default selection setup safely
+    if (pill.classList.contains('selected')) {
+      selected[group] = pill.textContent.trim();
+    }
+    
+    // Dynamic click handler re-attached safely
+    pill.onclick = function() {
+      document.querySelectorAll(`[data-group="${group}"]`).forEach(p => p.classList.remove('selected'));
+      pill.classList.add('selected');
+      selected[group] = pill.textContent.trim();
+    };
   });
-  if (pill.classList.contains('selected')) {
-    selected[group] = pill.textContent.trim();
-  }
-});
+}
+
+// Execute initialization once DOM handles it
+initPills();
 
 // ── TAB SWITCH ───────────────────────────────────────────
 function switchTab(tab) {
   currentTab = tab;
   ['image','video','text','script'].forEach(t => {
-    document.getElementById(t+'-fields').style.display = tab === t ? 'block' : 'none';
-    document.getElementById('tab-'+t).classList.toggle('active', tab === t);
+    const fieldEl = document.getElementById(t+'-fields');
+    const tabBtn = document.getElementById('tab-'+t);
+    if(fieldEl) fieldEl.style.display = tab === t ? 'block' : 'none';
+    if(tabBtn) tabBtn.classList.toggle('active', tab === t);
   });
+  
   const titles = { 
     image: 'Image Prompt Builder', 
     video: 'Video Prompt Builder', 
@@ -779,25 +791,37 @@ function switchTab(tab) {
 function updateCharCount(inputId, countId) {
   const el = document.getElementById(inputId);
   const count = document.getElementById(countId);
-  count.textContent = `${el.value.length} / ${el.maxLength}`;
+  if(el && count) {
+    count.textContent = `${el.value.length} / ${el.maxLength}`;
+  }
 }
 
 function updateDetailLabel(slider, labelId) {
   const labels = { '1': 'Basic Detail', '2': 'Medium Detail', '3': 'Max Detail' };
-  document.getElementById(labelId).textContent = labels[slider.value];
+  const labelEl = document.getElementById(labelId);
+  if(labelEl) labelEl.textContent = labels[slider.value];
 }
 
 function showError(msg) {
   const box = document.getElementById('error-box');
-  document.getElementById('error-msg').textContent = msg;
-  box.classList.add('visible');
+  if(box) {
+    document.getElementById('error-msg').textContent = msg;
+    box.classList.add('visible');
+  }
 }
-function hideError() { document.getElementById('error-box').classList.remove('visible'); }
+function hideError() { 
+  const box = document.getElementById('error-box');
+  if(box) box.classList.remove('visible'); 
+}
 
 function setLoading(on) {
-  document.getElementById('loading').classList.toggle('visible', on);
-  document.getElementById('gen-btn').disabled = on;
-  document.getElementById('gen-btn').textContent = on ? '⏳ Generating...' : '⚡ GENERATE WITH AI';
+  const btn = document.getElementById('gen-btn');
+  const loader = document.getElementById('loading');
+  if(loader) loader.classList.toggle('visible', on);
+  if(btn) {
+    btn.disabled = on;
+    btn.textContent = on ? '⏳ Generating...' : '⚡ GENERATE WITH AI';
+  }
 }
 
 function clearResults() {
@@ -857,7 +881,6 @@ Rules:
 - Return ONLY a JSON array with exactly 3 strings, nothing else
 - Format: ["prompt1", "prompt2", "prompt3"]`;
   } else {
-    // SCRIPT GENERATOR SYSTEM PROMPT
     return `You are an elite video scriptwriter and content strategist. Generate exactly 3 completely distinct video script variations based on the user's topic and specifications.
 
 Rules:
@@ -937,7 +960,6 @@ Output Length Required: ${len}
 
 Generate 3 unique, highly effective text prompts for this goal.`;
   } else {
-    // SCRIPT GENERATOR USER PROMPT
     const kw = document.getElementById('scr-keyword').value.trim() || 'interesting facts';
     const platform = selected['scr-platform'] || 'YouTube Short / Reel';
     const tone = selected['scr-tone'] || 'High-Energy & Hooky';
@@ -976,10 +998,13 @@ async function generatePrompt() {
   let msgIdx = 0;
   const loadingInterval = setInterval(() => {
     msgIdx = (msgIdx + 1) % loadingMsgs.length;
-    document.getElementById('loading-sub').textContent = loadingMsgs[msgIdx];
+    const loadSub = document.getElementById('loading-sub');
+    if(loadSub) loadSub.textContent = loadingMsgs[msgIdx];
   }, 1200);
 
-  const GROQ_API_KEY = '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
+  // !!! APNI GROQ API KEY YEHA PAR LIKHEIN !!!
+  const GROQ_API_KEY = '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';
+
   try {
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -989,7 +1014,7 @@ async function generatePrompt() {
       },
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
-        max_tokens: 1800, // Safe max limit scripts ke liye
+        max_tokens: 1800,
         temperature: 0.85,
         messages: [
           { role: 'system', content: buildSystemPrompt() },
@@ -1041,7 +1066,7 @@ function renderResults(prompts) {
   body.innerHTML = prompts.map((p, i) => {
     const wordCount = p.split(' ').length;
     let quality = Math.min(95, 60 + wordCount * 0.5 + (p.includes(',') ? 10 : 0));
-    if (currentTab === 'script') quality = Math.min(98, 75 + (wordCount > 50 ? 15 : 5)); // Custom script calculation
+    if (currentTab === 'script') quality = Math.min(98, 75 + (wordCount > 50 ? 15 : 5));
     
     const qColor = quality > 80 ? 'var(--green)' : quality > 60 ? 'var(--cyan)' : 'var(--amber)';
     const qLabel = quality > 80 ? 'High Quality' : quality > 60 ? 'Good' : 'Basic';
@@ -1069,7 +1094,6 @@ function renderResults(prompts) {
   document.getElementById('result-section').classList.add('visible');
   document.getElementById('result-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-  // Animate quality bars
   setTimeout(() => {
     prompts.forEach((_, i) => {
       const fill = document.getElementById(`qfill-${i}`);
@@ -1101,4 +1125,4 @@ function copyAll() {
 }
 </script>
 </body>
-</html>
+  </html>
