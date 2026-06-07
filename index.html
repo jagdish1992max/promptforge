@@ -35,7 +35,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Grid background */
 body::before {
   content: '';
   position: fixed;
@@ -48,7 +47,6 @@ body::before {
   z-index: 0;
 }
 
-/* Glow orbs */
 .orb {
   position: fixed;
   border-radius: 50%;
@@ -63,7 +61,6 @@ body::before {
 
 .wrap { max-width: 900px; margin: 0 auto; padding: 48px 20px 80px; position: relative; z-index: 1; }
 
-/* HEADER */
 header {
   margin-bottom: 48px;
   animation: fadeSlide 0.8s ease both;
@@ -106,7 +103,6 @@ h1 .line3 { display: block; background: linear-gradient(90deg, var(--violet-brig
 }
 .sub strong { color: var(--cyan); font-weight: 500; }
 
-/* AI BADGE */
 .ai-badge {
   display: inline-flex; align-items: center; gap: 8px;
   margin-top: 18px;
@@ -118,7 +114,6 @@ h1 .line3 { display: block; background: linear-gradient(90deg, var(--violet-brig
 .ai-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 2s infinite; }
 @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
 
-/* TABS */
 .tabs {
   display: flex; gap: 4px;
   background: var(--surface); border: 1px solid var(--border);
@@ -138,11 +133,9 @@ h1 .line3 { display: block; background: linear-gradient(90deg, var(--violet-brig
   color: var(--text);
   box-shadow: 0 1px 0 rgba(255,255,255,0.05) inset, 0 4px 16px rgba(0,0,0,0.4);
 }
-.tab-btn.active .tab-icon { filter: none; }
 .tab-icon { font-size: 16px; }
 .tab-btn:not(.active):hover { color: var(--text2); }
 
-/* MAIN CARD */
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -161,7 +154,6 @@ h1 .line3 { display: block; background: linear-gradient(90deg, var(--violet-brig
 .card-header h3 { font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text2); }
 .card-body { padding: 24px; }
 
-/* FIELD */
 .field { margin-bottom: 26px; }
 .field:last-child { margin-bottom: 0; }
 .field-label {
@@ -172,7 +164,6 @@ h1 .line3 { display: block; background: linear-gradient(90deg, var(--violet-brig
   content: ''; flex: 1; height: 1px; background: var(--border);
 }
 
-/* KEYWORD INPUT */
 .input-wrap { position: relative; }
 input[type="text"], textarea {
   width: 100%; background: var(--bg);
@@ -187,7 +178,6 @@ input[type="text"]:focus, textarea:focus {
 }
 input[type="text"]::placeholder, textarea::placeholder { color: var(--text3); }
 
-/* PILLS */
 .pills { display: flex; flex-wrap: wrap; gap: 8px; }
 .pill {
   padding: 7px 15px; border-radius: 8px;
@@ -202,7 +192,6 @@ input[type="text"]::placeholder, textarea::placeholder { color: var(--text3); }
   box-shadow: 0 0 12px rgba(123,94,167,0.15);
 }
 
-/* DETAIL LEVEL SLIDER */
 .slider-wrap { display: flex; align-items: center; gap: 16px; }
 .detail-slider {
   flex: 1; -webkit-appearance: none; appearance: none;
@@ -215,7 +204,6 @@ input[type="text"]::placeholder, textarea::placeholder { color: var(--text3); }
 }
 .slider-label { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--cyan); min-width: 80px; text-align: right; }
 
-/* GENERATE BTN */
 .generate-btn {
   width: 100%; padding: 18px; border: none; border-radius: 14px;
   background: linear-gradient(135deg, var(--violet) 0%, #9333ea 50%, #6366f1 100%);
@@ -237,7 +225,6 @@ input[type="text"]::placeholder, textarea::placeholder { color: var(--text3); }
 .generate-btn:active { transform: translateY(0); }
 .generate-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-/* LOADING */
 .loading-state {
   display: none; text-align: center; padding: 48px 24px;
 }
@@ -254,7 +241,6 @@ input[type="text"]::placeholder, textarea::placeholder { color: var(--text3); }
 .loading-text { color: var(--text2); font-size: 14px; }
 .loading-subtext { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text3); margin-top: 6px; }
 
-/* RESULTS */
 .result-section { display: none; animation: fadeSlide 0.5s ease both; }
 .result-section.visible { display: block; }
 
@@ -302,7 +288,7 @@ input[type="text"]::placeholder, textarea::placeholder { color: var(--text3); }
   color: var(--cyan); letter-spacing: 2px; text-transform: uppercase;
 }
 .prompt-actions { display: flex; gap: 8px; }
-.copy-single, .expand-btn {
+.copy-single {
   padding: 4px 12px; border-radius: 6px;
   border: 1px solid var(--border2); background: var(--surface);
   color: var(--text3); font-size: 11px; cursor: pointer; transition: all 0.2s;
@@ -310,16 +296,12 @@ input[type="text"]::placeholder, textarea::placeholder { color: var(--text3); }
 }
 .copy-single:hover { border-color: var(--cyan); color: var(--cyan); }
 .copy-single.copied { border-color: var(--green); color: var(--green); }
-.expand-btn:hover { border-color: var(--violet); color: var(--violet-bright); }
 
 .prompt-text {
   color: var(--text); font-size: 14px; line-height: 1.75; font-weight: 300;
   white-space: pre-wrap;
 }
-.prompt-text .highlight-kw { color: var(--cyan); font-weight: 500; }
-.prompt-text .highlight-style { color: var(--violet-bright); font-weight: 500; }
 
-/* QUALITY SCORE */
 .quality-bar-wrap {
   margin-top: 12px; padding-top: 12px;
   border-top: 1px solid var(--border);
@@ -330,7 +312,6 @@ input[type="text"]::placeholder, textarea::placeholder { color: var(--text3); }
 .quality-fill { height: 100%; border-radius: 2px; transition: width 1s ease; }
 .quality-score { font-family: 'IBM Plex Mono', monospace; font-size: 10px; flex-shrink: 0; }
 
-/* SHUFFLE / ACTIONS ROW */
 .actions-row {
   display: flex; gap: 10px; flex-wrap: wrap;
 }
@@ -343,7 +324,6 @@ input[type="text"]::placeholder, textarea::placeholder { color: var(--text3); }
 }
 .action-btn:hover { border-color: var(--violet); color: var(--violet-bright); background: rgba(123,94,167,0.08); }
 
-/* ERROR */
 .error-box {
   display: none; background: rgba(244,63,94,0.08);
   border: 1px solid rgba(244,63,94,0.25); border-radius: 12px;
@@ -351,10 +331,8 @@ input[type="text"]::placeholder, textarea::placeholder { color: var(--text3); }
 }
 .error-box.visible { display: block; }
 
-/* CHARACTER COUNT */
 .char-count { text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text3); margin-top: 6px; }
 
-/* SECTION DIVIDER */
 .section-divider {
   display: flex; align-items: center; gap: 12px;
   color: var(--text3); font-family: 'IBM Plex Mono', monospace; font-size: 10px;
@@ -362,17 +340,12 @@ input[type="text"]::placeholder, textarea::placeholder { color: var(--text3); }
 }
 .section-divider::before, .section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-/* FOOTER */
 footer {
   text-align: center; padding-top: 40px;
   color: var(--text3); font-size: 12px;
   font-family: 'IBM Plex Mono', monospace; letter-spacing: 1px;
 }
 footer span { color: var(--violet-bright); }
-
-/* TOOLTIP */
-.tooltip-wrap { position: relative; display: inline-flex; align-items: center; }
-.tooltip-icon { width: 14px; height: 14px; border-radius: 50%; background: var(--border2); color: var(--text3); font-size: 9px; display: inline-flex; align-items: center; justify-content: center; cursor: help; margin-left: 6px; }
 
 @media (max-width: 600px) {
   .card-body { padding: 16px; }
@@ -389,7 +362,6 @@ footer span { color: var(--violet-bright); }
 
 <div class="wrap">
 
-  <!-- HEADER -->
   <header>
     <div class="header-top">
       <div class="logo-mark">⚡</div>
@@ -402,7 +374,7 @@ footer span { color: var(--violet-bright); }
       <span class="line3">AI PROMPTS</span>
     </h1>
     <p class="sub">
-      Real <strong>Claude AI</strong> ke saath ultra-detailed prompts banao —
+      Real <strong>Groq AI</strong> ke saath ultra-detailed prompts banao —
       Midjourney, DALL·E, Sora, Runway aur text AI ke liye.
     </p>
     <div class="ai-badge">
@@ -411,7 +383,6 @@ footer span { color: var(--violet-bright); }
     </div>
   </header>
 
-  <!-- TABS -->
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('image')" id="tab-image">
       <span class="tab-icon">🖼️</span> Image Prompt
@@ -427,7 +398,6 @@ footer span { color: var(--violet-bright); }
     </button>
   </div>
 
-  <!-- MAIN CARD -->
   <div class="card">
     <div class="card-header">
       <div class="card-header-dot" style="background:var(--violet-bright);box-shadow:0 0 8px var(--violet-bright)"></div>
@@ -435,7 +405,7 @@ footer span { color: var(--violet-bright); }
     </div>
     <div class="card-body">
 
-      <!-- ── IMAGE FIELDS ── -->
+      <!-- IMAGE FIELDS -->
       <div id="image-fields">
         <div class="field">
           <label class="field-label">Subject / Topic</label>
@@ -444,7 +414,6 @@ footer span { color: var(--violet-bright); }
             <div class="char-count" id="img-char">0 / 200</div>
           </div>
         </div>
-
         <div class="field">
           <label class="field-label">Style</label>
           <div class="pills">
@@ -462,7 +431,6 @@ footer span { color: var(--violet-bright); }
             <span class="pill" data-group="img-style">Comic Book</span>
           </div>
         </div>
-
         <div class="field">
           <label class="field-label">Lighting</label>
           <div class="pills">
@@ -475,7 +443,6 @@ footer span { color: var(--violet-bright); }
             <span class="pill" data-group="img-light">Overcast Moody</span>
           </div>
         </div>
-
         <div class="field">
           <label class="field-label">Mood / Emotion</label>
           <div class="pills">
@@ -488,7 +455,6 @@ footer span { color: var(--violet-bright); }
             <span class="pill" data-group="img-mood">Futuristic</span>
           </div>
         </div>
-
         <div class="field">
           <label class="field-label">AI Tool</label>
           <div class="pills">
@@ -500,9 +466,7 @@ footer span { color: var(--violet-bright); }
             <span class="pill" data-group="img-tool">Flux</span>
           </div>
         </div>
-
         <div class="section-divider">Advanced Options</div>
-
         <div class="field">
           <label class="field-label">Detail Level</label>
           <div class="slider-wrap">
@@ -514,7 +478,7 @@ footer span { color: var(--violet-bright); }
         </div>
       </div>
 
-      <!-- ── VIDEO FIELDS ── -->
+      <!-- VIDEO FIELDS -->
       <div id="video-fields" style="display:none;">
         <div class="field">
           <label class="field-label">Scene / Subject</label>
@@ -523,7 +487,6 @@ footer span { color: var(--violet-bright); }
             <div class="char-count" id="vid-char">0 / 200</div>
           </div>
         </div>
-
         <div class="field">
           <label class="field-label">Camera Movement</label>
           <div class="pills">
@@ -537,7 +500,6 @@ footer span { color: var(--violet-bright); }
             <span class="pill" data-group="vid-cam">Handheld Raw</span>
           </div>
         </div>
-
         <div class="field">
           <label class="field-label">Mood / Atmosphere</label>
           <div class="pills">
@@ -550,7 +512,6 @@ footer span { color: var(--violet-bright); }
             <span class="pill" data-group="vid-mood">Horror Tense</span>
           </div>
         </div>
-
         <div class="field">
           <label class="field-label">Video Duration</label>
           <div class="pills">
@@ -560,7 +521,6 @@ footer span { color: var(--violet-bright); }
             <span class="pill" data-group="vid-dur">30 seconds</span>
           </div>
         </div>
-
         <div class="field">
           <label class="field-label">AI Video Tool</label>
           <div class="pills">
@@ -572,9 +532,7 @@ footer span { color: var(--violet-bright); }
             <span class="pill" data-group="vid-tool">Hailuo AI</span>
           </div>
         </div>
-
         <div class="section-divider">Advanced Options</div>
-
         <div class="field">
           <label class="field-label">Detail Level</label>
           <div class="slider-wrap">
@@ -586,7 +544,7 @@ footer span { color: var(--violet-bright); }
         </div>
       </div>
 
-      <!-- ── TEXT / CHAT AI FIELDS ── -->
+      <!-- TEXT / CHAT AI FIELDS -->
       <div id="text-fields" style="display:none;">
         <div class="field">
           <label class="field-label">Task / Goal</label>
@@ -595,7 +553,6 @@ footer span { color: var(--violet-bright); }
             <div class="char-count" id="txt-char">0 / 400</div>
           </div>
         </div>
-
         <div class="field">
           <label class="field-label">Prompt Type</label>
           <div class="pills">
@@ -607,7 +564,6 @@ footer span { color: var(--violet-bright); }
             <span class="pill" data-group="txt-type">Research / Analysis</span>
           </div>
         </div>
-
         <div class="field">
           <label class="field-label">Tone</label>
           <div class="pills">
@@ -619,7 +575,6 @@ footer span { color: var(--violet-bright); }
             <span class="pill" data-group="txt-tone">Persuasive</span>
           </div>
         </div>
-
         <div class="field">
           <label class="field-label">Target AI</label>
           <div class="pills">
@@ -629,9 +584,7 @@ footer span { color: var(--violet-bright); }
             <span class="pill" data-group="txt-tool">Universal</span>
           </div>
         </div>
-
         <div class="section-divider">Advanced Options</div>
-
         <div class="field">
           <label class="field-label">Output Length</label>
           <div class="pills">
@@ -643,7 +596,7 @@ footer span { color: var(--violet-bright); }
         </div>
       </div>
 
-      <!-- ── SCRIPT GENERATOR FIELDS ── -->
+      <!-- SCRIPT GENERATOR FIELDS -->
       <div id="script-fields" style="display:none;">
         <div class="field">
           <label class="field-label">Video Topic / Concept</label>
@@ -652,7 +605,6 @@ footer span { color: var(--violet-bright); }
             <div class="char-count" id="scr-char">0 / 300</div>
           </div>
         </div>
-
         <div class="field">
           <label class="field-label">Platform Format</label>
           <div class="pills">
@@ -662,7 +614,6 @@ footer span { color: var(--violet-bright); }
             <span class="pill" data-group="scr-platform">Cinematic Ad</span>
           </div>
         </div>
-
         <div class="field">
           <label class="field-label">Tone & Style</label>
           <div class="pills">
@@ -672,7 +623,6 @@ footer span { color: var(--violet-bright); }
             <span class="pill" data-group="scr-tone">Storytelling / Emotional</span>
           </div>
         </div>
-
         <div class="field">
           <label class="field-label">Estimated Duration</label>
           <div class="pills">
@@ -681,7 +631,6 @@ footer span { color: var(--violet-bright); }
             <span class="pill" data-group="scr-duration">5+ Minutes</span>
           </div>
         </div>
-
         <div class="section-divider">Output Format</div>
         <div class="field">
           <label class="field-label">Script Delivery Structure</label>
@@ -692,21 +641,18 @@ footer span { color: var(--violet-bright); }
         </div>
       </div>
 
-      <!-- GENERATE BUTTON -->
       <div style="margin-top:28px;">
         <button class="generate-btn" onclick="generatePrompt()" id="gen-btn">
           ⚡ GENERATE WITH AI
         </button>
       </div>
 
-      <!-- LOADING -->
       <div class="loading-state" id="loading">
         <div class="spinner"></div>
         <div class="loading-text">Groq AI prompt bana raha hai...</div>
         <div class="loading-subtext" id="loading-sub">Analyzing your inputs · Building context · Optimizing details</div>
       </div>
 
-      <!-- ERROR -->
       <div class="error-box" id="error-box">
         ⚠️ <span id="error-msg">Kuch error aaya. Dobara try karein.</span>
       </div>
@@ -739,46 +685,42 @@ footer span { color: var(--violet-bright); }
 </div>
 
 <script>
+// ── CONFIG ───────────────────────────────────────────────
+const GROQ_API_KEY = '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';
+
 // ── STATE ────────────────────────────────────────────────
 let currentTab = 'image';
 let selected = {};
 let lastPrompts = [];
 
-// ── FIXED AND CLEANED INITIALIZATION ─────────────────────
+// ── PILL INITIALIZATION ──────────────────────────────────
 function initPills() {
   document.querySelectorAll('.pill').forEach(pill => {
     const group = pill.dataset.group;
-    
-    // Default selection setup safely
     if (pill.classList.contains('selected')) {
       selected[group] = pill.textContent.trim();
     }
-    
-    // Dynamic click handler re-attached safely
-    pill.onclick = function() {
-      document.querySelectorAll(`[data-group="${group}"]`).forEach(p => p.classList.remove('selected'));
+    pill.onclick = function () {
+      document.querySelectorAll('[data-group="' + group + '"]').forEach(p => p.classList.remove('selected'));
       pill.classList.add('selected');
       selected[group] = pill.textContent.trim();
     };
   });
 }
-
-// Execute initialization once DOM handles it
 initPills();
 
 // ── TAB SWITCH ───────────────────────────────────────────
 function switchTab(tab) {
   currentTab = tab;
-  ['image','video','text','script'].forEach(t => {
-    const fieldEl = document.getElementById(t+'-fields');
-    const tabBtn = document.getElementById('tab-'+t);
-    if(fieldEl) fieldEl.style.display = tab === t ? 'block' : 'none';
-    if(tabBtn) tabBtn.classList.toggle('active', tab === t);
+  ['image', 'video', 'text', 'script'].forEach(t => {
+    var fieldEl = document.getElementById(t + '-fields');
+    var tabBtn = document.getElementById('tab-' + t);
+    if (fieldEl) fieldEl.style.display = tab === t ? 'block' : 'none';
+    if (tabBtn) tabBtn.classList.toggle('active', tab === t);
   });
-  
-  const titles = { 
-    image: 'Image Prompt Builder', 
-    video: 'Video Prompt Builder', 
+  var titles = {
+    image: 'Image Prompt Builder',
+    video: 'Video Prompt Builder',
     text: 'Text / Chat AI Prompt Builder',
     script: 'Video Script Generator'
   };
@@ -789,36 +731,34 @@ function switchTab(tab) {
 
 // ── HELPERS ──────────────────────────────────────────────
 function updateCharCount(inputId, countId) {
-  const el = document.getElementById(inputId);
-  const count = document.getElementById(countId);
-  if(el && count) {
-    count.textContent = `${el.value.length} / ${el.maxLength}`;
-  }
+  var el = document.getElementById(inputId);
+  var count = document.getElementById(countId);
+  if (el && count) count.textContent = el.value.length + ' / ' + el.maxLength;
 }
 
 function updateDetailLabel(slider, labelId) {
-  const labels = { '1': 'Basic Detail', '2': 'Medium Detail', '3': 'Max Detail' };
-  const labelEl = document.getElementById(labelId);
-  if(labelEl) labelEl.textContent = labels[slider.value];
+  var labels = { '1': 'Basic Detail', '2': 'Medium Detail', '3': 'Max Detail' };
+  var labelEl = document.getElementById(labelId);
+  if (labelEl) labelEl.textContent = labels[slider.value];
 }
 
 function showError(msg) {
-  const box = document.getElementById('error-box');
-  if(box) {
+  var box = document.getElementById('error-box');
+  if (box) {
     document.getElementById('error-msg').textContent = msg;
     box.classList.add('visible');
   }
 }
-function hideError() { 
-  const box = document.getElementById('error-box');
-  if(box) box.classList.remove('visible'); 
+function hideError() {
+  var box = document.getElementById('error-box');
+  if (box) box.classList.remove('visible');
 }
 
 function setLoading(on) {
-  const btn = document.getElementById('gen-btn');
-  const loader = document.getElementById('loading');
-  if(loader) loader.classList.toggle('visible', on);
-  if(btn) {
+  var btn = document.getElementById('gen-btn');
+  var loader = document.getElementById('loading');
+  if (loader) loader.classList.toggle('visible', on);
+  if (btn) {
     btn.disabled = on;
     btn.textContent = on ? '⏳ Generating...' : '⚡ GENERATE WITH AI';
   }
@@ -829,151 +769,85 @@ function clearResults() {
   lastPrompts = [];
 }
 
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 // ── BUILD SYSTEM PROMPT ──────────────────────────────────
 function buildSystemPrompt() {
   if (currentTab === 'image') {
-    const detail = document.getElementById('img-detail').value;
-    const detailInstr = detail === '1'
+    var detail = document.getElementById('img-detail').value;
+    var detailInstr = detail === '1'
       ? 'Keep prompts concise, around 30-50 words each.'
       : detail === '2'
       ? 'Make prompts moderately detailed, around 60-90 words each.'
-      : 'Make prompts extremely detailed and rich, around 100-150 words each. Include color palette, texture details, composition notes, and technical camera/rendering parameters.';
-
-    return `You are an expert AI image prompt engineer. Generate exactly 3 highly effective, unique image prompts for AI image generation tools.
-
-Rules:
-- Each prompt must be distinct and creative — no repetition
-- ${detailInstr}
-- Include specific artistic details: composition, color palette, lighting nuances, texture, depth
-- Naturally incorporate the style, lighting, and mood into each prompt
-- End each prompt with the appropriate tool-specific parameters
-- Do NOT use generic filler words
-- Return ONLY a JSON array with exactly 3 strings, nothing else
-- Format: ["prompt1", "prompt2", "prompt3"]`;
-
+      : 'Make prompts extremely detailed and rich, around 100-150 words each. Include color palette, composition notes, and technical parameters.';
+    return 'You are an expert AI image prompt engineer. Generate exactly 3 highly effective, unique image prompts for AI image generation tools.\n\nRules:\n- Each prompt must be distinct and creative — no repetition.\n- ' + detailInstr + '\n- Naturally incorporate style, lighting, and mood.\n- End each prompt with the parameters provided.\n- CRITICAL: Separate each of the 3 prompts strictly with the exact text: [PROMPT_SPLIT]\n- Do NOT use JSON, markdown code blocks, or any list numbers. Just output the raw text separated by [PROMPT_SPLIT].';
   } else if (currentTab === 'video') {
-    const detail = document.getElementById('vid-detail').value;
-    const detailInstr = detail === '1'
+    var detail = document.getElementById('vid-detail').value;
+    var detailInstr = detail === '1'
       ? 'Keep prompts concise, around 30-50 words each.'
       : detail === '2'
       ? 'Make prompts moderately detailed, around 60-90 words each.'
-      : 'Make prompts extremely detailed, around 100-140 words each. Include precise camera movement description, color grading, sound direction hints, and transition details.';
-
-    return `You are an expert AI video prompt engineer. Generate exactly 3 highly effective, unique video prompts for AI video generation tools.
-
-Rules:
-- Each prompt must be distinct with different creative approaches
-- ${detailInstr}
-- Include camera movement, lighting transitions, color grade, and timing
-- Describe the emotional arc and visual flow of the video
-- Include tool-specific parameters at the end
-- Return ONLY a JSON array with exactly 3 strings, nothing else
-- Format: ["prompt1", "prompt2", "prompt3"]`;
-
+      : 'Make prompts extremely detailed, around 100-140 words each.';
+    return 'You are an expert AI video prompt engineer. Generate exactly 3 highly effective, unique video prompts.\n\nRules:\n- Each prompt must be distinct with different creative approaches.\n- ' + detailInstr + '\n- Include camera movement, lighting transitions, and visual flow.\n- CRITICAL: Separate each of the 3 prompts strictly with the exact text: [PROMPT_SPLIT]\n- Do NOT use JSON, markdown code blocks, or list numbers. Just output the raw text separated by [PROMPT_SPLIT].';
   } else if (currentTab === 'text') {
-    return `You are an expert prompt engineer for text AI models. Generate exactly 3 highly effective, unique prompts optimized for text AI assistants.
-
-Rules:
-- Each prompt must be a complete, ready-to-use prompt (not a description of a prompt)
-- Include clear context, role assignment if needed, specific instructions, and output format guidance
-- Make prompts specific and actionable — avoid vague instructions
-- Tailor to the specified prompt type, tone, and output length
-- Return ONLY a JSON array with exactly 3 strings, nothing else
-- Format: ["prompt1", "prompt2", "prompt3"]`;
+    return 'You are an expert prompt engineer for text AI models. Generate exactly 3 highly effective, unique prompts.\n\nRules:\n- Each prompt must be a complete, ready-to-use prompt (not a description).\n- Include clear context, roles, and instructions.\n- CRITICAL: Separate each of the 3 prompts strictly with the exact text: [PROMPT_SPLIT]\n- Do NOT use JSON, markdown code blocks, or list numbers. Just output the raw text separated by [PROMPT_SPLIT].';
   } else {
-    return `You are an elite video scriptwriter and content strategist. Generate exactly 3 completely distinct video script variations based on the user's topic and specifications.
-
-Rules:
-- Provide exactly 3 complete, fully-written script variations.
-- Each script should target a slightly different angle or perspective of the topic.
-- Maintain the user-selected Tone, Format, and Structure perfectly across all variations.
-- Do NOT return code, explanations, or meta-commentary outside the JSON structure.
-- Return ONLY a valid JSON array containing exactly 3 strings. Each string is one complete script block.
-- Format: ["script text 1", "script text 2", "script text 3"]`;
+    return 'You are an elite video scriptwriter and content strategist. Generate exactly 3 completely distinct video script variations.\n\nRules:\n- Provide exactly 3 complete, fully-written script variations.\n- Each script should target a slightly different angle of the topic.\n- Maintain the user-selected Tone, Format, and Structure perfectly across all variations.\n- CRITICAL: Separate each of the 3 complete scripts strictly with the exact text: [PROMPT_SPLIT]\n- Do NOT use JSON, markdown code blocks, or list numbers. Just output the raw text separated by [PROMPT_SPLIT].';
   }
 }
 
 // ── BUILD USER MESSAGE ───────────────────────────────────
 function buildUserMessage() {
   if (currentTab === 'image') {
-    const kw = document.getElementById('img-keyword').value.trim() || 'a beautiful mysterious scene';
-    const style = selected['img-style'] || 'Photorealistic';
-    const light = selected['img-light'] || 'Golden Hour';
-    const mood = selected['img-mood'] || 'Epic & Grand';
-    const tool = selected['img-tool'] || 'Midjourney';
-
-    const toolParams = {
+    var kw = document.getElementById('img-keyword').value.trim() || 'a beautiful mysterious scene';
+    var style = selected['img-style'] || 'Photorealistic';
+    var light = selected['img-light'] || 'Golden Hour';
+    var mood = selected['img-mood'] || 'Epic & Grand';
+    var tool = selected['img-tool'] || 'Midjourney';
+    var toolParams = {
       'Midjourney': ' --ar 16:9 --v 6.1 --stylize 750 --quality 2',
       'DALL·E 3': ' | high quality, detailed, 4K',
-      'Stable Diffusion': ', masterpiece, best quality, highly detailed, 4k, (perfect composition:1.3)',
+      'Stable Diffusion': ', masterpiece, best quality, highly detailed, 4k',
       'Ideogram': ' | high quality illustration, typography-friendly',
-      'Adobe Firefly': ' | professional quality, commercial use, detailed',
+      'Adobe Firefly': ' | professional quality, detailed',
       'Flux': ', ultra detailed, photorealistic, 8K resolution'
     };
-
-    return `Subject: "${kw}"
-Style: ${style}
-Lighting: ${light}
-Mood: ${mood}
-Target Tool: ${tool}
-Tool Parameters to append: ${toolParams[tool] || ''}
-
-Generate 3 unique, powerful image prompts for this subject.`;
-
+    return 'Subject: "' + kw + '"\nStyle: ' + style + '\nLighting: ' + light + '\nMood: ' + mood + '\nTarget Tool: ' + tool + '\nTool Parameters to append: ' + (toolParams[tool] || '') + '\n\nGenerate 3 unique prompts separated by [PROMPT_SPLIT]';
   } else if (currentTab === 'video') {
-    const kw = document.getElementById('vid-keyword').value.trim() || 'a dramatic cinematic landscape';
-    const cam = selected['vid-cam'] || 'Slow Zoom In';
-    const mood = selected['vid-mood'] || 'Cinematic Epic';
-    const dur = selected['vid-dur'] || '10 seconds';
-    const tool = selected['vid-tool'] || 'Sora';
-
-    const toolParams = {
-      'Sora': `duration: ${dur}, aspect_ratio: 16:9, quality: high`,
-      'Runway Gen-3': `duration: ${dur}, cinematic quality, 4K`,
-      'Kling AI': `duration: ${dur}, smooth motion, high quality`,
-      'Pika Labs': `duration: ${dur}, HD, smooth`,
-      'Luma Dream': `duration: ${dur}, dream motion, cinematic`,
-      'Hailuo AI': `duration: ${dur}, high quality, smooth`
+    var kw = document.getElementById('vid-keyword').value.trim() || 'a dramatic cinematic landscape';
+    var cam = selected['vid-cam'] || 'Slow Zoom In';
+    var mood = selected['vid-mood'] || 'Cinematic Epic';
+    var dur = selected['vid-dur'] || '10 seconds';
+    var tool = selected['vid-tool'] || 'Sora';
+    var toolParams = {
+      'Sora': 'duration: ' + dur + ', aspect_ratio: 16:9, quality: high',
+      'Runway Gen-3': 'duration: ' + dur + ', cinematic quality, 4K',
+      'Kling AI': 'duration: ' + dur + ', smooth motion, high quality',
+      'Pika Labs': 'duration: ' + dur + ', HD, smooth',
+      'Luma Dream': 'duration: ' + dur + ', dream motion, cinematic',
+      'Hailuo AI': 'duration: ' + dur + ', high quality, smooth'
     };
-
-    return `Scene/Subject: "${kw}"
-Camera Movement: ${cam}
-Mood/Atmosphere: ${mood}
-Duration: ${dur}
-Target Tool: ${tool}
-Tool Parameters: ${toolParams[tool] || dur}
-
-Generate 3 unique, powerful video prompts for this scene.`;
-
+    return 'Scene/Subject: "' + kw + '"\nCamera Movement: ' + cam + '\nMood/Atmosphere: ' + mood + '\nDuration: ' + dur + '\nTarget Tool: ' + tool + '\nTool Parameters: ' + (toolParams[tool] || dur) + '\n\nGenerate 3 unique video prompts separated by [PROMPT_SPLIT]';
   } else if (currentTab === 'text') {
-    const kw = document.getElementById('txt-keyword').value.trim() || 'help me with a task';
-    const type = selected['txt-type'] || 'Detailed Instruction';
-    const tone = selected['txt-tone'] || 'Professional';
-    const tool = selected['txt-tool'] || 'ChatGPT / GPT-4';
-    const len = selected['txt-len'] || 'Medium';
-
-    return `Task/Goal: "${kw}"
-Prompt Type: ${type}
-Tone: ${tone}
-Target AI: ${tool}
-Output Length Required: ${len}
-
-Generate 3 unique, highly effective text prompts for this goal.`;
+    var kw = document.getElementById('txt-keyword').value.trim() || 'help me with a task';
+    var type = selected['txt-type'] || 'Detailed Instruction';
+    var tone = selected['txt-tone'] || 'Professional';
+    var tool = selected['txt-tool'] || 'ChatGPT / GPT-4';
+    var len = selected['txt-len'] || 'Medium';
+    return 'Task/Goal: "' + kw + '"\nPrompt Type: ' + type + '\nTone: ' + tone + '\nTarget AI: ' + tool + '\nOutput Length Required: ' + len + '\n\nGenerate 3 unique text prompts separated by [PROMPT_SPLIT]';
   } else {
-    const kw = document.getElementById('scr-keyword').value.trim() || 'interesting facts';
-    const platform = selected['scr-platform'] || 'YouTube Short / Reel';
-    const tone = selected['scr-tone'] || 'High-Energy & Hooky';
-    const duration = selected['scr-duration'] || 'Under 60 seconds';
-    const structure = selected['scr-structure'] || 'Visual Cues + Voiceover Duo';
-
-    return `Create 3 distinct, fully written scripts for a video.
-Topic/Concept: "${kw}"
-Platform Target: ${platform}
-Tone/Vibe: ${tone}
-Duration Constraint: ${duration}
-Formatting Style required: ${structure === 'Visual Cues + Voiceover Duo' ? 'Include [Visual Cues] and corresponding Line/Voiceover blocks.' : 'Only output the voiceover narrative text blocks, separated clean by paragraphs.'}
-
-Generate exactly 3 diverse script variations. Do not add intro/outro tags outside the variations.`;
+    var kw = document.getElementById('scr-keyword').value.trim() || 'interesting facts';
+    var platform = selected['scr-platform'] || 'YouTube Short / Reel';
+    var tone = selected['scr-tone'] || 'High-Energy & Hooky';
+    var duration = selected['scr-duration'] || 'Under 60 seconds';
+    var structure = selected['scr-structure'] || 'Visual Cues + Voiceover Duo';
+    return 'Create 3 distinct, fully written scripts.\nTopic/Concept: "' + kw + '"\nPlatform Target: ' + platform + '\nTone/Vibe: ' + tone + '\nDuration Constraint: ' + duration + '\nFormatting Style required: ' + (structure === 'Visual Cues + Voiceover Duo' ? 'Include [Visual Cues] and corresponding Line/Voiceover blocks.' : 'Only output the voiceover narrative text blocks, separated clean by paragraphs.') + '\n\nGenerate exactly 3 diverse script variations separated by [PROMPT_SPLIT]';
   }
 }
 
@@ -983,38 +857,35 @@ async function generatePrompt() {
   setLoading(true);
   document.getElementById('result-section').classList.remove('visible');
 
-  const loadingMsgs = currentTab === 'script' ? [
-    'Claude AI analyzing your script topic...',
+  var loadingMsgs = currentTab === 'script' ? [
+    'Groq AI analyzing your script topic...',
     'Structuring the psychological hook...',
     'Writing high-retention dialogue lines...',
     'Formatting your multi-variant video scripts...'
   ] : [
-    'Claude AI analyzing your inputs...',
+    'Groq AI analyzing your inputs...',
     'Crafting unique prompt variations...',
     'Adding rich details and parameters...',
     'Optimizing for your selected tool...'
   ];
-  
-  let msgIdx = 0;
-  const loadingInterval = setInterval(() => {
+
+  var msgIdx = 0;
+  var loadingInterval = setInterval(function () {
     msgIdx = (msgIdx + 1) % loadingMsgs.length;
-    const loadSub = document.getElementById('loading-sub');
-    if(loadSub) loadSub.textContent = loadingMsgs[msgIdx];
+    var loadSub = document.getElementById('loading-sub');
+    if (loadSub) loadSub.textContent = loadingMsgs[msgIdx];
   }, 1200);
 
-  // !!! APNI GROQ API KEY YEHA PAR LIKHEIN !!!
-  const GROQ_API_KEY = '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';
-
   try {
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    var response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GROQ_API_KEY}`
+        'Authorization': 'Bearer ' + GROQ_API_KEY
       },
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
-        max_tokens: 1800,
+        max_tokens: 2200,
         temperature: 0.85,
         messages: [
           { role: 'system', content: buildSystemPrompt() },
@@ -1024,23 +895,27 @@ async function generatePrompt() {
     });
 
     if (!response.ok) {
-      const errData = await response.json().catch(() => ({}));
-      throw new Error(errData.error?.message || `API Error: ${response.status}`);
+      var errData = await response.json().catch(function () { return {}; });
+      throw new Error(errData.error && errData.error.message ? errData.error.message : 'API Error: ' + response.status);
     }
 
-    const data = await response.json();
-    const raw = data.choices?.[0]?.message?.content || '';
-    const clean = raw.replace(/```json|```/g, '').trim();
-    const prompts = JSON.parse(clean);
+    var data = await response.json();
+    var raw = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) ? data.choices[0].message.content : '';
 
-    if (!Array.isArray(prompts) || prompts.length === 0) throw new Error('Invalid response format');
+    var prompts = raw.split('[PROMPT_SPLIT]')
+      .map(function (p) { return p.replace(/^```[a-z]*\n?|```$/gi, '').trim(); })
+      .filter(function (p) { return p.length > 0; });
 
-    lastPrompts = prompts;
-    renderResults(prompts);
+    if (!prompts || prompts.length === 0) {
+      throw new Error('Could not parse variations from AI response. Please try again.');
+    }
+
+    lastPrompts = prompts.slice(0, 3);
+    renderResults(lastPrompts);
 
   } catch (err) {
     console.error(err);
-    showError('AI generation failed. Please try again. Error: ' + err.message);
+    showError('AI generation failed: ' + err.message);
   } finally {
     clearInterval(loadingInterval);
     setLoading(false);
@@ -1049,78 +924,68 @@ async function generatePrompt() {
 
 // ── RENDER RESULTS ───────────────────────────────────────
 function renderResults(prompts) {
-  let labelText = '';
+  var labelText = '';
   if (currentTab === 'script') {
-    labelText = `${selected['scr-platform'] || 'Video'} Scripts`;
+    labelText = (selected['scr-platform'] || 'Video') + ' Scripts';
   } else {
-    const tool = selected['img-tool'] || selected['vid-tool'] || selected['txt-tool'] || '';
-    const tabLabel = { image: 'Image', video: 'Video', text: 'Text AI' }[currentTab];
-    labelText = `${tool} ${tabLabel} Prompts`;
+    var tool = selected['img-tool'] || selected['vid-tool'] || selected['txt-tool'] || '';
+    var tabLabel = { image: 'Image', video: 'Video', text: 'Text AI' }[currentTab] || '';
+    labelText = tool + ' ' + tabLabel + ' Prompts';
   }
 
-  const tabTypeLabel = currentTab === 'script' ? 'scripts' : 'prompts';
+  var tabTypeLabel = currentTab === 'script' ? 'scripts' : 'prompts';
   document.getElementById('result-label').textContent = labelText;
-  document.getElementById('result-meta').textContent = `${prompts.length} ${tabTypeLabel} · AI generated · ${new Date().toLocaleTimeString()}`;
+  document.getElementById('result-meta').textContent = prompts.length + ' ' + tabTypeLabel + ' · AI generated · ' + new Date().toLocaleTimeString();
 
-  const body = document.getElementById('result-body');
-  body.innerHTML = prompts.map((p, i) => {
-    const wordCount = p.split(' ').length;
-    let quality = Math.min(95, 60 + wordCount * 0.5 + (p.includes(',') ? 10 : 0));
+  var body = document.getElementById('result-body');
+  body.innerHTML = prompts.map(function (p, i) {
+    var wordCount = p.split(' ').length;
+    var quality = Math.min(95, 60 + wordCount * 0.5 + (p.includes(',') ? 10 : 0));
     if (currentTab === 'script') quality = Math.min(98, 75 + (wordCount > 50 ? 15 : 5));
-    
-    const qColor = quality > 80 ? 'var(--green)' : quality > 60 ? 'var(--cyan)' : 'var(--amber)';
-    const qLabel = quality > 80 ? 'High Quality' : quality > 60 ? 'Good' : 'Basic';
-    const itemNumLabel = currentTab === 'script' ? 'Script Variation' : 'Prompt';
-
-    return `
-    <div class="prompt-item" id="prompt-${i}">
-      <div class="prompt-item-header">
-        <div class="prompt-num">${itemNumLabel} ${i + 1} of ${prompts.length}</div>
-        <div class="prompt-actions">
-          <button class="copy-single" onclick="copySingle(this, ${i})">Copy</button>
-        </div>
-      </div>
-      <div class="prompt-text">${escapeHtml(p)}</div>
-      <div class="quality-bar-wrap">
-        <span class="quality-label">${currentTab === 'script' ? 'Script Score' : 'Prompt Quality'}</span>
-        <div class="quality-bar">
-          <div class="quality-fill" id="qfill-${i}" style="width:0%;background:${qColor}" data-q="${quality}"></div>
-        </div>
-        <span class="quality-score" style="color:${qColor}">${qLabel} · ${Math.round(quality)}%</span>
-      </div>
-    </div>`;
+    var qColor = quality > 80 ? 'var(--green)' : quality > 60 ? 'var(--cyan)' : 'var(--amber)';
+    var qLabel = quality > 80 ? 'High Quality' : quality > 60 ? 'Good' : 'Basic';
+    var itemNumLabel = currentTab === 'script' ? 'Script Variation' : 'Prompt';
+    return '<div class="prompt-item" id="prompt-' + i + '">'
+      + '<div class="prompt-item-header">'
+      + '<div class="prompt-num">' + itemNumLabel + ' ' + (i + 1) + ' of ' + prompts.length + '</div>'
+      + '<div class="prompt-actions">'
+      + '<button class="copy-single" onclick="copySingle(this,' + i + ')">Copy</button>'
+      + '</div></div>'
+      + '<div class="prompt-text">' + escapeHtml(p) + '</div>'
+      + '<div class="quality-bar-wrap">'
+      + '<span class="quality-label">' + (currentTab === 'script' ? 'Script Score' : 'Prompt Quality') + '</span>'
+      + '<div class="quality-bar"><div class="quality-fill" id="qfill-' + i + '" style="width:0%;background:' + qColor + '" data-q="' + Math.round(quality) + '"></div></div>'
+      + '<span class="quality-score" style="color:' + qColor + '">' + qLabel + ' · ' + Math.round(quality) + '%</span>'
+      + '</div></div>';
   }).join('');
 
-  document.getElementById('result-section').classList.add('visible');
-  document.getElementById('result-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  var resultSection = document.getElementById('result-section');
+  resultSection.classList.add('visible');
+  resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-  setTimeout(() => {
-    prompts.forEach((_, i) => {
-      const fill = document.getElementById(`qfill-${i}`);
+  setTimeout(function () {
+    prompts.forEach(function (_, i) {
+      var fill = document.getElementById('qfill-' + i);
       if (fill) fill.style.width = fill.dataset.q + '%';
     });
   }, 200);
 }
 
-function escapeHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
 // ── COPY ─────────────────────────────────────────────────
 function copySingle(btn, idx) {
-  navigator.clipboard.writeText(lastPrompts[idx]).then(() => {
+  navigator.clipboard.writeText(lastPrompts[idx]).then(function () {
     btn.textContent = '✓ Copied!';
     btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+    setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
   });
 }
 
 function copyAll() {
-  const btn = document.getElementById('copy-all-btn');
-  navigator.clipboard.writeText(lastPrompts.join('\n\n---\n\n')).then(() => {
+  var btn = document.getElementById('copy-all-btn');
+  navigator.clipboard.writeText(lastPrompts.join('\n\n---\n\n')).then(function () {
     btn.textContent = '✓ All Copied!';
     btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'Copy All'; btn.classList.remove('copied'); }, 2000);
+    setTimeout(function () { btn.textContent = 'Copy All'; btn.classList.remove('copied'); }, 2000);
   });
 }
 </script>
