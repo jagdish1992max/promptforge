@@ -798,7 +798,11 @@ function buildSystemPrompt() {
   } else if (currentTab === 'text') {
     return 'You are an expert prompt engineer for text AI models. Generate exactly 3 highly effective, unique prompts.\n\nRules:\n- Each prompt must be a complete, ready-to-use prompt (not a description).\n- Include clear context, roles, and instructions.\n- CRITICAL: Separate each of the 3 prompts strictly with the exact text: [PROMPT_SPLIT]\n- Do NOT use JSON, markdown code blocks, or list numbers. Just output the raw text separated by [PROMPT_SPLIT].';
   } else {
-    return 'You are an elite video scriptwriter and content strategist. Generate exactly 3 completely distinct video script variations.\n\nRules:\n- Provide exactly 3 complete, fully-written script variations.\n- Each script should target a slightly different angle of the topic.\n- Maintain the user-selected Tone, Format, and Structure perfectly across all variations.\n- CRITICAL: Separate each of the 3 complete scripts strictly with the exact text: [PROMPT_SPLIT]\n- Do NOT use JSON, markdown code blocks, or list numbers. Just output the raw text separated by [PROMPT_SPLIT].';
+    var scrStructure = selected['scr-structure'] || 'Visual Cues + Voiceover Duo';
+    var formatGuide = scrStructure === 'Visual Cues + Voiceover Duo'
+      ? 'FORMAT EACH SCRIPT LIKE THIS:\n[VISUAL: describe what viewer sees]\nVOICEOVER: spoken words here\n[VISUAL: next scene]\nVOICEOVER: spoken words here\n... and so on for the full script.'
+      : 'FORMAT: Write only the spoken voiceover text, paragraph by paragraph. No visual cues, just the narration words the creator will speak.';
+    return 'You are a professional video scriptwriter. Your job is to WRITE ACTUAL COMPLETE VIDEO SCRIPTS — not describe them, not summarize them, not give instructions about them. WRITE THE ACTUAL WORDS.\n\n' + formatGuide + '\n\nRULES:\n- Write 3 full scripts, each one complete from hook to end.\n- Each script must have a strong opening hook (first line grabs attention immediately).\n- Scripts must be fully written out — every word of voiceover, every scene note.\n- Do NOT write meta-commentary like "Here is script 1" or "This script uses...". Just write the script content directly.\n- Do NOT explain what the script does. Just write it.\n- CRITICAL: Separate the 3 scripts with exactly this text on its own line: [PROMPT_SPLIT]\n- No JSON, no markdown code fences, no numbered lists before scripts.';
   }
 }
 
@@ -842,12 +846,19 @@ function buildUserMessage() {
     var len = selected['txt-len'] || 'Medium';
     return 'Task/Goal: "' + kw + '"\nPrompt Type: ' + type + '\nTone: ' + tone + '\nTarget AI: ' + tool + '\nOutput Length Required: ' + len + '\n\nGenerate 3 unique text prompts separated by [PROMPT_SPLIT]';
   } else {
-    var kw = document.getElementById('scr-keyword').value.trim() || 'interesting facts';
+    var kw = document.getElementById('scr-keyword').value.trim() || 'interesting facts about AI';
     var platform = selected['scr-platform'] || 'YouTube Short / Reel';
     var tone = selected['scr-tone'] || 'High-Energy & Hooky';
     var duration = selected['scr-duration'] || 'Under 60 seconds';
     var structure = selected['scr-structure'] || 'Visual Cues + Voiceover Duo';
-    return 'Create 3 distinct, fully written scripts.\nTopic/Concept: "' + kw + '"\nPlatform Target: ' + platform + '\nTone/Vibe: ' + tone + '\nDuration Constraint: ' + duration + '\nFormatting Style required: ' + (structure === 'Visual Cues + Voiceover Duo' ? 'Include [Visual Cues] and corresponding Line/Voiceover blocks.' : 'Only output the voiceover narrative text blocks, separated clean by paragraphs.') + '\n\nGenerate exactly 3 diverse script variations separated by [PROMPT_SPLIT]';
+
+    var durationGuide = duration === 'Under 60 seconds'
+      ? 'Each script: 60-90 words of spoken content (roughly 30-45 seconds at normal pace).'
+      : duration === '2 to 3 Minutes'
+      ? 'Each script: 300-400 words of spoken content (2-3 minutes at normal pace).'
+      : 'Each script: 700-900 words of spoken content (5+ minutes at normal pace).';
+
+    return 'TOPIC: "' + kw + '"\nPLATFORM: ' + platform + '\nTONE: ' + tone + '\nDURATION TARGET: ' + duration + ' — ' + durationGuide + '\nFORMAT: ' + structure + '\n\nWrite 3 COMPLETE, FULLY WRITTEN video scripts on this topic right now. Each script must be a different angle or approach to the same topic. Start writing Script 1 immediately. Do not add any preamble or explanation.';
   }
 }
 
@@ -885,8 +896,8 @@ async function generatePrompt() {
       },
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
-        max_tokens: 2200,
-        temperature: 0.85,
+        max_tokens: currentTab === 'script' ? 6000 : 2200,
+        temperature: currentTab === 'script' ? 0.9 : 0.85,
         messages: [
           { role: 'system', content: buildSystemPrompt() },
           { role: 'user', content: buildUserMessage() }
@@ -990,4 +1001,4 @@ function copyAll() {
 }
 </script>
 </body>
-  </html>
+</html>
